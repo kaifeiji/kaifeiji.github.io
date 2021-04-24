@@ -16,7 +16,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="最近客户要求从老数据库迁移数据，其中涉及到把 Blob 格式的图片转为文件格式，通过研究编写了一个简单的存储过程，输入 Blob 可以向指定文件夹输出文件，供参考。">
@@ -209,7 +209,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="/post-images/oracle-de-wen-jian-cao-zuo-util_file-bao-he-dbms_lob-bao.jpg" alt="Oracle"></p>
+        <p><img data-src="/post-images/oracle-de-wen-jian-cao-zuo-util_file-bao-he-dbms_lob-bao.jpg" alt="Oracle"></p>
 <p>最近客户要求从老数据库迁移数据，其中涉及到把 Blob 格式的图片转为文件格式，通过研究编写了一个简单的存储过程，输入 Blob 可以向指定文件夹输出文件，供参考。</p>
 <span id="more"></span>
 
@@ -225,7 +225,7 @@
 <li><p>设置两个服务的登录账户，以管理员身份登录；</p>
 </li>
 </ol>
-<p><img src="/post-images/1561901241937.jpg" alt="Oracle"></p>
+<p><img data-src="/post-images/1561901241937.jpg" alt="Oracle"></p>
 <ol start="3">
 <li><p>重启两个服务，可以看到服务右侧显示为 Administrator 账户；</p>
 </li>
@@ -248,6 +248,26 @@
     
     
     
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\01\29\excel-shu-ju-dao-ru-oracle-de-qi-ji-yin-qiao\" rel="bookmark">Excel数据导入Oracle的奇技淫巧</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\01\31\oracle-de-chang-yong-nei-zhi-han-shu\" rel="bookmark">Oracle的常用内置函数</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\01\30\oracle-de-cun-chu-guo-cheng-ni-ming-kuai-han-shu-guo-cheng-bao\" rel="bookmark">Oracle的存储过程——匿名块、函数、过程、包</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\01\25\oracle-de-shi-li-yong-hu-fang-an-he-biao-kong-jian\" rel="bookmark">Oracle的实例、用户、方案和表空间</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\01\26\oracle-de-shu-ju-lei-xing-jie-shao\" rel="bookmark">Oracle的数据类型介绍</a></div>
+    </li>
+  </ul>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -409,6 +429,7 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
 
 <script src="/js/utils.js"></script>
 

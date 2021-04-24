@@ -16,7 +16,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta property="og:type" content="article">
@@ -209,7 +209,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="/post-images/Nextcloud.png" alt="Nextcloud"></p>
+        <p><img data-src="/post-images/Nextcloud.png" alt="Nextcloud"></p>
 <span id="more"></span>
 
 <h1 id="蛋疼的-OneDrive-APP-速度"><a href="#蛋疼的-OneDrive-APP-速度" class="headerlink" title="蛋疼的 OneDrive APP 速度"></a>蛋疼的 OneDrive APP 速度</h1><p>从前年开始订阅的 Office 365，白送 OneDrive 1T 空间，本着不用白不用的原则，把工作和个人的内容都扔到上边，三端同步，以防万一。</p>
@@ -220,7 +220,7 @@
 <p>具有网盘的基本功能：上传、存储、下载、预览、分享。</p>
 <p>另外还有很多应用（插件）：日历、邮件、社交、提醒等等。</p>
 <p>这个东西适合喜欢折腾的人，安逸的人建议直接购买群晖等商业 NAS。</p>
-<p><img src="/post-images/nextcloudindex.png" alt="目录"></p>
+<p><img data-src="/post-images/nextcloudindex.png" alt="目录"></p>
 <h1 id="安装和配置"><a href="#安装和配置" class="headerlink" title="安装和配置"></a>安装和配置</h1><p>如果英文好，可以跳过这篇文章，直接查看<a target="_blank" rel="noopener" href="https://docs.nextcloud.com/server/19/admin_manual/">官方文档</a></p>
 <h2 id="部署环境"><a href="#部署环境" class="headerlink" title="部署环境"></a>部署环境</h2><p>硬件：ThinkPad E530C（2013 年）<br>操作系统：Ubuntu 20</p>
 <h2 id="Snap-安装"><a href="#Snap-安装" class="headerlink" title="Snap 安装"></a>Snap 安装</h2><p>推荐直接<a target="_blank" rel="noopener" href="https://docs.nextcloud.com/server/19/admin_manual/installation/source_installation.html#installing-via-snap-packages">Snap 安装</a>，快速无痛。</p>
@@ -232,7 +232,7 @@
 
 <p>安装完成后，Nextcloud 自动启动（80 端口），可以在直接在浏览器中访问<a target="_blank" rel="noopener" href="http://localhost/">http://localhost</a>。</p>
 <p>在第一次开启登录界面时，根据提示设置管理员用户、密码，并指定存储位置（后续再修改会很困难）。</p>
-<p><img src="/post-images/nextcloudlogin.png" alt="登录"></p>
+<p><img data-src="/post-images/nextcloudlogin.png" alt="登录"></p>
 <p>到此处，一个局域网可运行的玩具就部署完成了。</p>
 <h1 id="映射到互联网"><a href="#映射到互联网" class="headerlink" title="映射到互联网"></a>映射到互联网</h1><p>如果要映射到互联网，必须满足 3 个条件之一：</p>
 <p>1、家里的宽带有公网 IP，Nextcloud 所在的服务器能通过公网 IP 暴露到互联网</p>
@@ -279,6 +279,14 @@
     
     
     
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\09\07\shi-yong-xin-ban-microsoft-edge\" rel="bookmark">试用新版Microsoft Edge</a></div>
+    </li>
+  </ul>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -441,6 +449,7 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
 
 <script src="/js/utils.js"></script>
 

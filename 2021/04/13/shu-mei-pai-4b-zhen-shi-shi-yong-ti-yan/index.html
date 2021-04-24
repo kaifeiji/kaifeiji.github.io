@@ -16,7 +16,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="之前用 2012 年的老旧笔记本 ThinkPad E530c，做了一个 Aria2 下载服务器。 时间长了发现这玩意耗电还是挺可观的，遂买了树莓派 4B，作为替代。 美其名曰节能减排，实际就是按捺不住骚动的内心，实在是想着折腾点啥吧。">
@@ -210,7 +210,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg" alt="树莓派"></p>
+        <p><img data-src="/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg" alt="树莓派"></p>
 <p>之前用 2012 年的老旧笔记本 ThinkPad E530c，做了一个 Aria2 下载服务器。</p>
 <p>时间长了发现这玩意耗电还是挺可观的，遂买了树莓派 4B，作为替代。</p>
 <p>美其名曰节能减排，实际就是按捺不住骚动的内心，实在是想着折腾点啥吧。</p>
@@ -289,7 +289,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Aria2 简单配置信息：</span><br><span class="line"></span><br><span class="line"> IPv4 地址      : 123.123.123.123</span><br><span class="line"> IPv6 地址      : IPv6 地址检测失败</span><br><span class="line"> RPC 端口       : 6800</span><br><span class="line"> RPC 密钥       : Aria2_1024</span><br><span class="line"> 下载目录       : &#x2F;share&#x2F;downloads</span><br><span class="line"> AriaNg 链接    : http:&#x2F;&#x2F;ariang.js.org&#x2F;#!&#x2F;settings&#x2F;rpc&#x2F;set&#x2F;ws&#x2F;123.123.123.123&#x2F;6800&#x2F;jsonrpc&#x2F;token</span><br></pre></td></tr></table></figure>
 
 <p>将最后一行地址中的“123.123.123.123”换成 VPS 的 IP 地址，即可远程访问 Aria2。</p>
-<p><img src="https://kaifeiji.cc/post-images/1619180597689.png" alt="Aria2"></p>
+<p><img data-src="https://kaifeiji.cc/post-images/1619180597689.png" alt="Aria2"></p>
 <p>网络链路如下：</p>
 <p>浏览器 -&gt; ariang.js.org 提供的 AriaNg 前端 -&gt; VPS 的 frps 转发 -&gt; 树莓派的 frpc 接收 -&gt; aria2 程序交互</p>
 <h2 id="部署-AriaNg"><a href="#部署-AriaNg" class="headerlink" title="部署 AriaNg"></a>部署 AriaNg</h2><p>也可以不用 ariang.js.org 的前端，自己部署一个 AriaNg。</p>
@@ -301,6 +301,26 @@
     
     
     
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\05\31\dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu\" rel="bookmark">导入iPhone的照片如何保留时刻信息，按时间排序？</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2008\08\28\fu-yin-nokia6070-de-dian-zi-shu\" rel="bookmark">福音——Nokia6070的电子书</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2019\06\14\hello-gridea\" rel="bookmark">Gridea</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2021\03\03\li-yong-opencv-guo-lu-jian-kong-shi-pin-ding-qi-shan-chu-jing-tai-shi-pin\" rel="bookmark">利用OpenCV过滤监控视频，定期删除静态视频</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2020\09\07\shi-yong-xin-ban-microsoft-edge\" rel="bookmark">试用新版Microsoft Edge</a></div>
+    </li>
+  </ul>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -460,6 +480,7 @@
 
   
   <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
 
 <script src="/js/utils.js"></script>
 
