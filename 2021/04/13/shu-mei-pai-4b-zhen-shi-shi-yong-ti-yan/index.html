@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://kaifeiji.cc/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg">
 <meta property="og:image" content="https://kaifeiji.cc/post-images/1619180597689.png">
 <meta property="article:published_time" content="2021-04-13T12:41:35.000Z">
-<meta property="article:modified_time" content="2021-04-24T04:17:59.792Z">
+<meta property="article:modified_time" content="2021-04-24T04:58:06.972Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="折腾">
 <meta property="article:tag" content="树莓派">
@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 12:17:59" itemprop="dateModified" datetime="2021-04-24T12:17:59+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 12:58:06" itemprop="dateModified" datetime="2021-04-24T12:58:06+08:00">2021-04-24</time>
               </span>
 
           
@@ -260,8 +260,7 @@
 <p>树莓派 4B 是 arm64 架构，所以需要分别下载 2 个：</p>
 <p>frp_0.36.2_linux_arm64.tar.gz</p>
 <p>frp_0.36.2_linux_amd64.tar.gz</p>
-<p>1、frps</p>
-<p>将 frp_0.36.2_linux_amd64.tar.gz 部署到 VPS 的/usr/local/frps/文件夹。</p>
+<h3 id="frps"><a href="#frps" class="headerlink" title="frps"></a>frps</h3><p>将 frp_0.36.2_linux_amd64.tar.gz 部署到 VPS 的/usr/local/frps/文件夹。</p>
 <p>编辑 frps 配置文件如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># nano &#x2F;usr&#x2F;local&#x2F;frps&#x2F;frps.ini</span><br><span class="line"></span><br><span class="line">[common]</span><br><span class="line">bind_addr &#x3D; 0.0.0.0</span><br><span class="line">bind_port &#x3D; 5443</span><br><span class="line">kcp_bind_port &#x3D; 5443</span><br><span class="line">dashboard_port &#x3D; 6443</span><br><span class="line">dashboard_user &#x3D; admin</span><br><span class="line">dashboard_pwd &#x3D; frps_1024</span><br><span class="line">vhost_http_port &#x3D; 8080</span><br><span class="line">vhost_https_port &#x3D; 8443</span><br><span class="line">log_file &#x3D; &#x2F;usr&#x2F;local&#x2F;frps&#x2F;frps.log</span><br><span class="line">log_level &#x3D; info</span><br><span class="line">log_max_days &#x3D; 3</span><br><span class="line">token &#x3D; frps的token随后要用</span><br><span class="line">max_pool_count &#x3D; 50</span><br><span class="line">tcp_mux &#x3D; true</span><br></pre></td></tr></table></figure>
 
@@ -271,8 +270,7 @@
 <p>最后刷新一下服务：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># systemctl daemon-reload</span><br><span class="line"># systemctl start frps</span><br><span class="line"># systemctl status frps</span><br></pre></td></tr></table></figure>
 
-<p>2、frpc</p>
-<p>将 frp_0.36.2_linux_arm64.tar.gz 部署到树莓派的/usr/local/frpc/文件夹。</p>
+<h3 id="frpc"><a href="#frpc" class="headerlink" title="frpc"></a>frpc</h3><p>将 frp_0.36.2_linux_arm64.tar.gz 部署到树莓派的/usr/local/frpc/文件夹。</p>
 <p>编辑 frpc 配置文件如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># nano &#x2F;usr&#x2F;local&#x2F;frpc&#x2F;frpc.ini</span><br><span class="line"></span><br><span class="line">[common]</span><br><span class="line">server_addr &#x3D; VPS的IP地址</span><br><span class="line">server_port &#x3D; 5443</span><br><span class="line">authentication_method &#x3D; token</span><br><span class="line">token &#x3D; VPS上frps的token</span><br><span class="line"></span><br><span class="line">[aria2]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip&#x3D;127.0.0.1</span><br><span class="line">local_port &#x3D; 6800</span><br><span class="line">remote_port &#x3D; 8600</span><br></pre></td></tr></table></figure>
 
@@ -378,7 +376,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%AD%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">购置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E7%AE%B1"><span class="nav-number">2.</span> <span class="nav-text">开箱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">安装配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%83%A7%E5%BD%95%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.1.</span> <span class="nav-text">烧录系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Wifi"><span class="nav-number">3.2.</span> <span class="nav-text">配置 Wifi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA"><span class="nav-number">3.3.</span> <span class="nav-text">开机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH"><span class="nav-number">3.4.</span> <span class="nav-text">SSH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aria2"><span class="nav-number">4.</span> <span class="nav-text">Aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frp"><span class="nav-number">4.1.</span> <span class="nav-text">frp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-aria2"><span class="nav-number">4.2.</span> <span class="nav-text">部署 aria2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-AriaNg"><span class="nav-number">4.3.</span> <span class="nav-text">部署 AriaNg</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%AD%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">购置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E7%AE%B1"><span class="nav-number">2.</span> <span class="nav-text">开箱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">安装配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%83%A7%E5%BD%95%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.1.</span> <span class="nav-text">烧录系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Wifi"><span class="nav-number">3.2.</span> <span class="nav-text">配置 Wifi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA"><span class="nav-number">3.3.</span> <span class="nav-text">开机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH"><span class="nav-number">3.4.</span> <span class="nav-text">SSH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aria2"><span class="nav-number">4.</span> <span class="nav-text">Aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frp"><span class="nav-number">4.1.</span> <span class="nav-text">frp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#frps"><span class="nav-number">4.1.1.</span> <span class="nav-text">frps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frpc"><span class="nav-number">4.1.2.</span> <span class="nav-text">frpc</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-aria2"><span class="nav-number">4.2.</span> <span class="nav-text">部署 aria2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-AriaNg"><span class="nav-number">4.3.</span> <span class="nav-text">部署 AriaNg</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
