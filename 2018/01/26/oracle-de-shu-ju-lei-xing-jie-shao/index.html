@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文简要介绍 Oracle 常用的基本数据类型及特点，包括字符类型、LOB 类型、数值类型、日期类型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Oracle的数据类型介绍">
+<meta property="og:url" content="http://kaifeiji.cc/2018/01/26/oracle-de-shu-ju-lei-xing-jie-shao/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="本文简要介绍 Oracle 常用的基本数据类型及特点，包括字符类型、LOB 类型、数值类型、日期类型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/oracle-de-shu-ju-lei-xing-jie-shao.jpg">
+<meta property="article:published_time" content="2018-01-26T03:38:05.000Z">
+<meta property="article:modified_time" content="2021-04-24T04:17:59.798Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaifeiji.cc/post-images/oracle-de-shu-ju-lei-xing-jie-shao.jpg">
+
+<link rel="canonical" href="http://kaifeiji.cc/2018/01/26/oracle-de-shu-ju-lei-xing-jie-shao/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Oracle的数据类型介绍 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/2018/01/26/oracle-de-shu-ju-lei-xing-jie-shao/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Oracle的数据类型介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-01-26 11:38:05" itemprop="dateCreated datePublished" datetime="2018-01-26T11:38:05+08:00">2018-01-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-24 12:17:59" itemprop="dateModified" datetime="2021-04-24T12:17:59+08:00">2021-04-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/post-images/oracle-de-shu-ju-lei-xing-jie-shao.jpg"></p>
+<p>本文简要介绍 Oracle 常用的基本数据类型及特点，包括<strong>字符类型</strong>、<strong>LOB 类型</strong>、<strong>数值类型</strong>、<strong>日期类型</strong>。</p>
+<span id="more"></span>
+
+<h1 id="1-字符类型"><a href="#1-字符类型" class="headerlink" title="1 字符类型"></a>1 字符类型</h1><p>字符类型是 Oracle 中基础数据类型之一，也是数据库开发中最常用的一种数据类型。</p>
+<p>Oracle 提供了四种主要的字符类型：char、nchar、varchar2、nvarchar2。</p>
+<h2 id="1-1-char-和-varchar2"><a href="#1-1-char-和-varchar2" class="headerlink" title="1.1 char 和 varchar2"></a>1.1 char 和 varchar2</h2><p>char 最大长度为 2000 字节，属于定长度类型，即 char(n)指定了字符串长度，n 介于 1 到 2000 之间，即使输入的字节数小于 n，也会用空格补足到 n 长度。例如：</p>
+<p><code>l_char char(10):=&#39;test&#39;;</code></p>
+<p>指定 l_char 的长度为 10，内容为“test”，但实际 l_char 存储的是“test”+六个空格。</p>
+<p>varchar2 最大长度为 4000 字节，属于变长度类型，即 varchar2(n)指定了字符串长度，n 介于 1 到 4000 之间，如果输入的字节数小于 n，那么字符串长度等于实际输入长度。例如：</p>
+<p><code>l_varchar2 varchar2(10):=&#39;test&#39;;</code></p>
+<p>指定 l_varchar2 的长度为 10，内容为“test”，实际 l_varchar2 存储的也是四个字节的“test”。</p>
+<p>很明显，varchar2 要更节省数据库空间，但为什么还要有 char 类型呢？因为 char 的定长度特性，在需要频繁修改的字段，使用 char 具有一定的效率优势。</p>
+<p>char 牺牲空间，提高效率，但有一个弊端，在读取 char 数据时，需要用 trim()函数来去掉 char 补足的空格，否则获取的就是带着一串空格的内容。</p>
+<h2 id="1-2-nchar-和-nvarchar2"><a href="#1-2-nchar-和-nvarchar2" class="headerlink" title="1.2 nchar 和 nvarchar2"></a>1.2 nchar 和 nvarchar2</h2><p>在学习了 char 和 varchar2 后，nchar 和 nvarchar2 就不难理解了。</p>
+<p>以 nchar 为例，在 char 前加了一个“n”，所代表的意义就是以字符数确定长度，而非以字节数确定长度。例如：</p>
+<p><code>l_char char(10):=&#39;1234567890&#39;;</code></p>
+<p><code>l_nchar nchar(10):=&#39;一二三四五六七八九零&#39;;</code></p>
+<p>l_char 指定的长度是 10 个字节，那么它只能存储不超过 10 个的数字、英文字母、英文符号，或者不超过 5 个的汉字或符号（这里指 GBK 编码，一个汉字两个字节，如果是 UTF-8 编码，则是一个汉字占三个字节）。</p>
+<p>l_nchar 指定的长度是 10 个字符，那么它可以存储不超过 10 个的数字、英文字母、英文符号、汉字或符号。</p>
+<p>nvarchar2 和 nchar 类似，是以字符数来确定长度的，二者适合存储汉字或符号。</p>
+<p>与 char 和 varchar2 相同的是，nchar 和 nvarchar2 的最大长度分别是 2000 字节和 4000 字节。那么在 GBK 编码下，nchar(n)中的 n 最大是 1000，nvarchar2(n)中的 n 最大是 2000，否则就有可能超出字节限制，导致数据丢失。在 UTF-8 编码下，其最大字符长度则分别为 666 和 1333。</p>
+<h2 id="1-3-varchar2，4000-还是-32767？"><a href="#1-3-varchar2，4000-还是-32767？" class="headerlink" title="1.3 varchar2，4000 还是 32767？"></a>1.3 varchar2，4000 还是 32767？</h2><p>在 PL/SQL 中，有时会见到类似如下语句：</p>
+<p><code>l_varchar2 varchar2(32767);</code></p>
+<p>有的同学会有疑问：前边不是说 varchar2 最大长度是 4000 字节吗？</p>
+<p>这并不矛盾，4000 字节的长度限制，是存储在数据表中的 varchar2 字段的最大长度。</p>
+<p>在 PL/SQL 的存储过程中，varchar2 类型变量的最大长度可达 32767 字节！</p>
+<p>表字段 4000 字节，存储过程变量 32767 字节，不能更长了。</p>
+<h1 id="2-LOB-类型"><a href="#2-LOB-类型" class="headerlink" title="2 LOB 类型"></a>2 LOB 类型</h1><p>在存储二进制数据时，要使用 BLOB 类型；</p>
+<p>存储超过 4000 字节的字符型表字段，或使用超过 32767 字节的 PL/SQL 变量时，需要用到 CLOB 类型，CLOB 可以存储不超过 4GB 的字符内容。</p>
+<p>注意：在非必要的情况下，尽量不使用 BLOB 或 CLOB，它会大大降低执行效率。</p>
+<h1 id="3-字符类型"><a href="#3-字符类型" class="headerlink" title="3 字符类型"></a>3 字符类型</h1><h2 id="3-1-NUMBER-P-S"><a href="#3-1-NUMBER-P-S" class="headerlink" title="3.1 NUMBER(P,S)"></a>3.1 NUMBER(P,S)</h2><p>NUMBER(P,S)是最常见的数字类型，需要 1~22 字节(BYTE)不等的存储空间，可以存放数据范围为：</p>
+<p>10^-130~10^126（不包含此值)</p>
+<p>P 是 Precison 的英文缩写，即精度缩写，表示有效数字的位数，最多不能超过 38 个有效数字。</p>
+<p>S 是 Scale 的英文缩写，可以使用的范围为-84~127。Scale 为正数时，表示从小数点到最低有效数字的位数，它为负数时，表示从最大有效数字到小数点的位数。</p>
+<p>下面是官方文档的示例：</p>
+<table>
+<thead>
+<tr>
+<th align="center">实际数据</th>
+<th align="center">定义类型</th>
+<th align="center">存储数据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER</td>
+<td align="center">123.89</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(3)</td>
+<td align="center">124</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(6,2)</td>
+<td align="center">123.89</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(6,1)</td>
+<td align="center">123.9</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(3)</td>
+<td align="center">124</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(4,2)</td>
+<td align="center">超出精度，无法存储</td>
+</tr>
+<tr>
+<td align="center">123.89</td>
+<td align="center">NUMBER(6,-2)</td>
+<td align="center">100</td>
+</tr>
+<tr>
+<td align="center">.01234</td>
+<td align="center">NUMBER(4,5)</td>
+<td align="center">.01234</td>
+</tr>
+<tr>
+<td align="center">.00012</td>
+<td align="center">NUMBER(4,5)</td>
+<td align="center">.00012</td>
+</tr>
+<tr>
+<td align="center">.000127</td>
+<td align="center">NUMBER(4,5)</td>
+<td align="center">.00013</td>
+</tr>
+<tr>
+<td align="center">.0000012</td>
+<td align="center">NUMBER(2,7)</td>
+<td align="center">.0000012</td>
+</tr>
+<tr>
+<td align="center">.00000123</td>
+<td align="center">NUMBER(2,7)</td>
+<td align="center">.0000012</td>
+</tr>
+<tr>
+<td align="center">1.2e-4</td>
+<td align="center">NUMBER(2,5)</td>
+<td align="center">0.00012</td>
+</tr>
+<tr>
+<td align="center">1.2e-5</td>
+<td align="center">NUMBER(2,5)</td>
+<td align="center">0.00001</td>
+</tr>
+</tbody></table>
+<h2 id="3-2-INTEGER-类型"><a href="#3-2-INTEGER-类型" class="headerlink" title="3.2 INTEGER 类型"></a>3.2 INTEGER 类型</h2><p>INTEGER 是 NUMBER 的子类型，它等同于 NUMBER(38,0)，用来存储整数。</p>
+<p>INTEGER 的数值范围是-2147483648 到 2147483647 。</p>
+<p>若 INTEGER 字段插入、更新的数值有小数，则会被四舍五入。</p>
+<h1 id="4-日期类型"><a href="#4-日期类型" class="headerlink" title="4 日期类型"></a>4 日期类型</h1><p>DATE 是最常用的日期数据类型（本文不介绍 timestamp 相关内容），存储日期和时间信息。</p>
+<p>DATE 类型可以转换成字符类型：</p>
+<p><code>to_char(DATE,&#39;YYYY/MM/DD HH24:MI:SS&#39;)</code></p>
+<p>转换成类似’2018/01/29 22:13:42’的格式。</p>
+<p>格式是可以自己定义的，也可以用：</p>
+<p><code>to_char(DATE,&#39;YYYY-MM-DD&#39;)</code></p>
+<p>转换成类似’2018-01-29’的格式。</p>
+<p>如果将 DATE 类型不经转换直接写入 VARCHAR2 字段，其格式是不可预知的，例如：</p>
+<p><code>update tableA set varcharA=sysdate;</code></p>
+<p>其中 varcharA 是 VARCHAR2 类型，sysdate 是 DATE 类型的系统当前时间，写入后，varcharA 字段可能是 2018-01-29 的格式，也可能是 29-1 月-18 的格式，可能是 Jan-29-18 的格式。</p>
+<p>为了避免这种不可控，应使用 to_char 转换后再写入 VARCHAR2 字段：</p>
+<p><code>update tableA set varcharA=to_char(sysdate,&#39;YYYY-MM-DD&#39;);</code></p>
+<p>同样，VARCHAR2 类型也可以通过 to_date 函数转换为 DATE 类型：</p>
+<p><code>to_date(&#39;2018/01/29&#39;,&#39;YYYY-MM-DD&#39;)</code></p>
+<p>转换成 2018 年 1 月 29 日 0 时 0 分 0 秒的 DATE 类型。</p>
+<p>总之，DATE 类型包含的数据，包含年月日时分秒，它可以通过不同的形式显示出来，但它是精确到秒的一个特定的时间点。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/01/25/oracle-de-shi-li-yong-hu-fang-an-he-biao-kong-jian/" rel="prev" title="Oracle的实例、用户、方案和表空间">
+      <i class="fa fa-chevron-left"></i> Oracle的实例、用户、方案和表空间
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/01/27/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/" rel="next" title="SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤">
+      SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">1 字符类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-char-%E5%92%8C-varchar2"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 char 和 varchar2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-nchar-%E5%92%8C-nvarchar2"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 nchar 和 nvarchar2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-varchar2%EF%BC%8C4000-%E8%BF%98%E6%98%AF-32767%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 varchar2，4000 还是 32767？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-LOB-%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">2 LOB 类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">3 字符类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-NUMBER-P-S"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 NUMBER(P,S)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-INTEGER-%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 INTEGER 类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%97%A5%E6%9C%9F%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">4 日期类型</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '0b8311e5ad6fad4f514b',
+      clientSecret: '15eff641e5b858cfa6d40f92a6321eb22a175e1d',
+      repo        : 'kaifeiji.github.io',
+      owner       : 'kaifeiji',
+      admin       : ['kaifeiji'],
+      id          : 'b8ce413005f484565c732c146591de5a',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

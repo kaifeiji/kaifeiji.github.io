@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="为了降低成本、顺应开源化潮流，公司从 Oracle 转向了 PostgreSQL。由于是连平台一块换了，不存在迁移的问题，所以不需要使用 orafce、Ora2pg 之类的转换迁移工具，只需要了解语法差异，转换比较平稳。 PG 目前是数据库榜单上的探花，坐观榜眼 MySQL 和状元 Oracle，学习一下还是很有价值的！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL与Oracle的语法差异总结">
+<meta property="og:url" content="http://kaifeiji.cc/2019/07/07/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="为了降低成本、顺应开源化潮流，公司从 Oracle 转向了 PostgreSQL。由于是连平台一块换了，不存在迁移的问题，所以不需要使用 orafce、Ora2pg 之类的转换迁移工具，只需要了解语法差异，转换比较平稳。 PG 目前是数据库榜单上的探花，坐观榜眼 MySQL 和状元 Oracle，学习一下还是很有价值的！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie.png">
+<meta property="article:published_time" content="2019-07-07T04:39:26.000Z">
+<meta property="article:modified_time" content="2021-04-24T04:18:11.293Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaifeiji.cc/post-images/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie.png">
+
+<link rel="canonical" href="http://kaifeiji.cc/2019/07/07/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>PostgreSQL与Oracle的语法差异总结 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/2019/07/07/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PostgreSQL与Oracle的语法差异总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-07 12:39:26" itemprop="dateCreated datePublished" datetime="2019-07-07T12:39:26+08:00">2019-07-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-24 12:18:11" itemprop="dateModified" datetime="2021-04-24T12:18:11+08:00">2021-04-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/post-images/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie.png"></p>
+<p>为了降低成本、顺应开源化潮流，公司从 Oracle 转向了 PostgreSQL。由于是连平台一块换了，不存在迁移的问题，所以不需要使用 orafce、Ora2pg 之类的转换迁移工具，只需要了解语法差异，转换比较平稳。</p>
+<p>PG 目前是数据库榜单上的探花，坐观榜眼 MySQL 和状元 Oracle，学习一下还是很有价值的！</p>
+<span id="more"></span>
+
+<h1 id="JDBC-连接"><a href="#JDBC-连接" class="headerlink" title="JDBC 连接"></a>JDBC 连接</h1><ul>
+<li>  Oracle 的 JDBC 连接字符串：</li>
+</ul>
+<p>db.url=jdbc:oracle:thin:@192.168.1.1:1521:ORCL</p>
+<ul>
+<li>  PostgreSQL 的 JDBC 连接字符串：</li>
+</ul>
+<p>db.url=jdbc:postgresql:@192.168.1.1:5432/database</p>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><table>
+<thead>
+<tr>
+<th align="center">Oracle</th>
+<th align="center">PostgreSQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">varchar2</td>
+<td align="center">varchar</td>
+</tr>
+<tr>
+<td align="center">number</td>
+<td align="center">numeric</td>
+</tr>
+<tr>
+<td align="center">date</td>
+<td align="center">timestamp/date/time</td>
+</tr>
+<tr>
+<td align="center">不支持 boolean</td>
+<td align="center">支持 boolean</td>
+</tr>
+<tr>
+<td align="center">null</td>
+<td align="center">null</td>
+</tr>
+</tbody></table>
+<h1 id="数据类型转换"><a href="#数据类型转换" class="headerlink" title="数据类型转换"></a>数据类型转换</h1><p>Oracle 和 PostgreSQL 都支持 to_char()、to_number()、to_date()的函数进行字符类型、数值类型和日期类型的转换。</p>
+<p>Oracle 在数据类型转换方面比较智能，能够在 SQL 中自动将数据转换为字段对应的类型，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create tableA (name varchar2(36), score integer);</span><br><span class="line">--&#39;13&#39;被自动转换为13</span><br><span class="line">update tableA set score&#x3D;&#39;13&#39; where name&#x3D;&#39;张三&#39;;</span><br></pre></td></tr></table></figure>
+
+<p>PostgreSQL 在类似场景下就比较严格：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create tableA (name varchar(36), score int);</span><br><span class="line">--&#39;13&#39;被转换为13，::是PG特有的简化语法，等价于标准SQL的CAST(&#39;13&#39; AS INT)</span><br><span class="line">update tableA set score&#x3D;&#39;13&#39;::int where name&#x3D;&#39;张三&#39;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">Oracle</th>
+<th align="center">PostgreSQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">字符串连接</td>
+<td align="center">||</td>
+<td align="center">concat()</td>
+</tr>
+<tr>
+<td align="center">‘a’||null</td>
+<td align="center">‘a’</td>
+<td align="center">null</td>
+</tr>
+<tr>
+<td align="center">系统当前时间</td>
+<td align="center">sysdate</td>
+<td align="center">now(),current_timestamp,current_date,current_time</td>
+</tr>
+<tr>
+<td align="center">对时间截取</td>
+<td align="center">trunc()</td>
+<td align="center">date_trunc()</td>
+</tr>
+<tr>
+<td align="center">判空操作</td>
+<td align="center">nvl()</td>
+<td align="center">coalesce()</td>
+</tr>
+<tr>
+<td align="center">条件判断</td>
+<td align="center">decode()</td>
+<td align="center">case…when…then…else…end</td>
+</tr>
+<tr>
+<td align="center">dual 伪表</td>
+<td align="center">支持</td>
+<td align="center">select now();</td>
+</tr>
+<tr>
+<td align="center">外联</td>
+<td align="center">(+)</td>
+<td align="center">left join,right join</td>
+</tr>
+<tr>
+<td align="center">GOTO</td>
+<td align="center">支持</td>
+<td align="center">不支持</td>
+</tr>
+<tr>
+<td align="center">procedure</td>
+<td align="center">支持</td>
+<td align="center">改为 function</td>
+</tr>
+<tr>
+<td align="center">package</td>
+<td align="center">支持</td>
+<td align="center">改为 function</td>
+</tr>
+</tbody></table>
+<h1 id="MERGE-INTO-和-on-conflict-do"><a href="#MERGE-INTO-和-on-conflict-do" class="headerlink" title="MERGE INTO 和 on conflict() do"></a>MERGE INTO 和 on conflict() do</h1><p>Oracle 和 PostgreSQL 增删改查语法基本一致，有一点不同：</p>
+<p>Oracle 有强大的 MERGE INTO：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MERGE INTO tableA AT a</span><br><span class="line">USING tableB AS b</span><br><span class="line">ON a.id&#x3D;b.id</span><br><span class="line">WHEN MATCHED--匹配则更新</span><br><span class="line">THEN UPDATE SET a.field&#x3D;b.field</span><br><span class="line">WHEN NOT MATCHED--无匹配则插入</span><br><span class="line">THEN INSERT VALUES (b.id,b.field)</span><br><span class="line">WHEN NOT MATCHED BY SOURCE--源表不存在则删除目标表</span><br><span class="line">THEN DELETE;</span><br></pre></td></tr></table></figure>
+
+<p>PostgreSQL 可以使用 on conflict() do：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">insert into tableA</span><br><span class="line">	select id,field from tableB</span><br><span class="line">	on conflict (id)</span><br><span class="line">  do update set field &#x3D; exclude.field</span><br></pre></td></tr></table></figure>
+
+<h1 id="查询语句"><a href="#查询语句" class="headerlink" title="查询语句"></a>查询语句</h1><ol>
+<li>查询表中最新 n 条数据</li>
+</ol>
+<p>Oracle 用 rownum：</p>
+<p>写法一：</p>
+<p><code>select t.* from (select * from tableA order by create_time desc) t where rownum &lt;= n;</code></p>
+<p>写法二：</p>
+<p><code>select * from(select t.*, row_number() over(order by create_time desc) rn from tableA t) where rn &lt;=n;</code></p>
+<p>上述写法一为通用常规写法；写法二可以对分组后数据排序，分组语句写在 over()中</p>
+<p>postgreSQL 用 limit：</p>
+<p><code>select * from tableA order by create_time desc limit n;</code></p>
+<p>注意：limit 必须用于 order by 之后</p>
+<ol start="2">
+<li>子查询</li>
+</ol>
+<p>Oracle 子查询用括号包起来即可，无需加别名（Alias）:</p>
+<p><code>select name from (select id,name from tableA) ;</code></p>
+<p>postgreSQL 子查询要求比较严格，必须具有别名：</p>
+<p><code>select a.name from (select id,name from tableA) a;</code></p>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><p>Oracle 中，通过 commit/rollback 来实现事务提交或回滚。结构类似于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">    select ...</span><br><span class="line">    update ...</span><br><span class="line">    delete ...</span><br><span class="line">    commit;</span><br><span class="line">exception</span><br><span class="line">    when others then</span><br><span class="line">    rollback;</span><br><span class="line">end;</span><br></pre></td></tr></table></figure>
+
+<p>PostgreSQL 实际上把每个 SQL 语句当做在一个事务中执行来看待。</p>
+<p>如果你没有发出 BEGIN 命令，那么每个独立的语句都被一个隐含的 BEGIN 和(如果成功的话)COMMIT 包围。</p>
+<p>一组包围在 BEGIN 和 COMMIT 之间的语句有时候被称做事务块。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BEGIN;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance - 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Alice&#39;;</span><br><span class="line">SAVEPOINT my_savepoint;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance + 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Bob&#39;;</span><br><span class="line">-- 呀！加错钱了，应该用 Wally 的账号</span><br><span class="line">ROLLBACK TO my_savepoint;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance + 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Wally&#39;;</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+
+<p>在 PL/pgSQL 中，也提供了类似于 Oracle 的 Begin、End 及 ExceptionCode 处理机制。他们之间的差异不明显。事实上，PL/SQL（Oracle 数据库操作语言）与 PL/pgSQL 是高度相似的，这让 procedure 在 Oracle 与 Postgresql 之间迁移变得极为便捷。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/03/postgresql-de-xing-zhuan-lie-he-lie-zhuan-xing/" rel="prev" title="PostgreSQL的行转列和列转行">
+      <i class="fa fa-chevron-left"></i> PostgreSQL的行转列和列转行
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/05/xin-de-gu-shi-jiu-de-hui-yi/" rel="next" title="新的故事 旧的回忆">
+      新的故事 旧的回忆 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JDBC-%E8%BF%9E%E6%8E%A5"><span class="nav-number">1.</span> <span class="nav-text">JDBC 连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">3.</span> <span class="nav-text">数据类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MERGE-INTO-%E5%92%8C-on-conflict-do"><span class="nav-number">5.</span> <span class="nav-text">MERGE INTO 和 on conflict() do</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5"><span class="nav-number">6.</span> <span class="nav-text">查询语句</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1"><span class="nav-number">7.</span> <span class="nav-text">事务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '0b8311e5ad6fad4f514b',
+      clientSecret: '15eff641e5b858cfa6d40f92a6321eb22a175e1d',
+      repo        : 'kaifeiji.github.io',
+      owner       : 'kaifeiji',
+      admin       : ['kaifeiji'],
+      id          : '247ee6e4548862f5c27bf1d77649fdf4',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
