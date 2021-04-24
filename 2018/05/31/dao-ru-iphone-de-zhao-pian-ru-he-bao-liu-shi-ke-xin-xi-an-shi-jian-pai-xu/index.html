@@ -34,7 +34,7 @@
 <meta property="og:image" content="http://kaifeiji.cc/post-images/1560507570552.jpg">
 <meta property="og:image" content="http://kaifeiji.cc/post-images/1560507584983.jpg">
 <meta property="article:published_time" content="2018-05-31T09:21:58.000Z">
-<meta property="article:modified_time" content="2021-04-24T05:41:40.735Z">
+<meta property="article:modified_time" content="2021-04-24T07:08:16.675Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="折腾">
 <meta name="twitter:card" content="summary">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 13:41:40" itemprop="dateModified" datetime="2021-04-24T13:41:40+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 15:08:16" itemprop="dateModified" datetime="2021-04-24T15:08:16+08:00">2021-04-24</time>
               </span>
 
           
@@ -214,7 +214,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><img src="/post-images/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu.jpg"></p>
+        <p><img src="/post-images/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu.jpg" alt="玩转exif"></p>
 <p>iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。本文采用的是 ACDSee 和 Timeback，将要导入 iPhone 的照片四个日期改为一致的，就能保证导入的照片时间顺序啦。</p>
 <span id="more"></span>
 
@@ -230,18 +230,18 @@
 <h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><strong>机型：iPhone SE</strong></p>
 <p><strong>软件：iTunes、<a target="_blank" rel="noopener" href="http://www.bathome.net/thread-8242-2-1.html">TimeBack（批处理之家 xinje）</a>、ACDSee</strong></p>
 <h2 id="步骤-1："><a href="#步骤-1：" class="headerlink" title="步骤 1："></a>步骤 1：</h2><p>用 ACDSee 以列表形式查看需要导入的照片，下图可见，四个日期是完全一致的，这是更新成功后的结果，在更新前，我们要确定哪一个日期才是真正的拍摄日期（小概率会发生原始日期错误而创建日期正确的情况）。</p>
-<p><img src="/post-images/1560507503207.jpg"></p>
+<p><img src="/post-images/1560507503207.jpg" alt="拍摄日期"></p>
 <p>列表列出文件名、原始日期（即拍摄日期）、修改日期、创建日期、访问日期</p>
-<p><img src="/post-images/1560507521760.jpg"></p>
+<p><img src="/post-images/1560507521760.jpg" alt="列表"></p>
 <p>右键点击图片列表的表头，点击详细信息，可以设置 ACDSee 显示的列表项</p>
 <h2 id="步骤-2："><a href="#步骤-2：" class="headerlink" title="步骤 2："></a>步骤 2：</h2><p>在步骤 1 中，我们确定了一批图片的拍摄日期是正确的，在菜单中选择调整时间标签。</p>
-<p><img src="/post-images/1560507540213.jpg"></p>
+<p><img src="/post-images/1560507540213.jpg" alt="调整时间标签"></p>
 <p>选择调整时间标签（CTRL+T）</p>
 <p>在弹出的窗口选择“文件上次修改日期与时间”/“文件创建日期与时间”，点击下一步。这两个日期分别进行依次批量操作，保证两个日期均与拍摄日期一致。</p>
-<p><img src="/post-images/1560507550459.jpg"></p>
+<p><img src="/post-images/1560507550459.jpg" alt="批量操作"></p>
 <p>修改日期和创建日期批量操作两次</p>
 <p>在下一步窗口中选择“使用不同的日期与时间”，选择“原始 Exif 日期/时间”，点击调整时间标签，完成后，可以看到修改日期、创建日期与拍摄日期保持一致了。</p>
-<p><img src="/post-images/1560507570552.jpg"></p>
+<p><img src="/post-images/1560507570552.jpg" alt="原始Exif"></p>
 <p>根据情况灵活选择，哪个时间对就选哪个</p>
 <h2 id="步骤-3："><a href="#步骤-3：" class="headerlink" title="步骤 3："></a>步骤 3：</h2><p>下载 TimeBack.exe，复制到 C:\Windows\System32 文件夹下。</p>
 <p>在任意位置创建批处理文件 batchUpdate.bat，其中的路径更换成照片所在文件夹，双击执行。</p>
@@ -250,7 +250,7 @@
 <p>执行完成后，即可看到第一张图中，四个日期保持一致。</p>
 <h2 id="步骤-4："><a href="#步骤-4：" class="headerlink" title="步骤 4："></a>步骤 4：</h2><p>在 iTunes 中，将所选文件夹同步到 iPhone 中，再看 iPhone 时刻。</p>
 <p>如果含有名为“iPod Photo Cache”的文件夹，需提前删除，这是之前同步的照片缓存，如不删除则导致日期仍未之前同步的照片日期。</p>
-<p><img src="/post-images/1560507584983.jpg"></p>
+<p><img src="/post-images/1560507584983.jpg" alt="导入照片"></p>
 <h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p><strong>iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。</strong></p>
 <p>要导入 iPhone 的照片时间正确，就要把四个日期改成一样的。</p>
 <p>但是批处理文件获取不到拍摄日期，而 ACDSee 不能批量修改访问日期。</p>
