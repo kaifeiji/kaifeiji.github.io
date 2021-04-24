@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="Oracle 中的行转列和列转行分别有 pivot 和 unpivot 方法。 在 PostgreSQL 中，行列互转的方法也有很多，在这里介绍常用的两种。">
@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://kaifeiji.cc/post-images/postgresql-de-xing-zhuan-lie-he-lie-zhuan-xing.png">
 <meta property="article:published_time" content="2019-07-03T03:41:41.000Z">
-<meta property="article:modified_time" content="2021-04-24T04:18:11.293Z">
+<meta property="article:modified_time" content="2021-04-24T05:53:52.465Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
@@ -81,7 +81,7 @@
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
+  <div class="container">
     <div class="headband"></div>
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -127,12 +127,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">46</span></a>
 
   </li>
   </ul>
@@ -149,6 +149,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -168,7 +169,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="kaifeiji">
-      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br />">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -193,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 12:18:11" itemprop="dateModified" datetime="2021-04-24T12:18:11+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 13:53:52" itemprop="dateModified" datetime="2021-04-24T13:53:52+08:00">2021-04-24</time>
               </span>
 
           
@@ -292,31 +293,35 @@
 <ol>
 <li>使用 crosstab 方法，需要安装扩展模块 tablefunc：</li>
 </ol>
-<p><code>CREATE EXTENSION tablefunc;--第一次使用crosstab前执行，后续无需再执行</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> EXTENSION tablefunc;<span class="comment">--第一次使用crosstab前执行，后续无需再执行</span></span><br></pre></td></tr></table></figure>
+
 <ol start="2">
 <li>实现代码：</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM crosstab</span><br><span class="line">(</span><br><span class="line">	&#39;SELECT name, month, avg_temp FROM data_avg_temp ORDER  BY 1,2&#39;,</span><br><span class="line">	$$values(&#39;jan&#39;::text),(&#39;apr&#39;::text),(&#39;july&#39;::text),(&#39;oct&#39;::text)$$</span><br><span class="line">)</span><br><span class="line">AS data_avg_temp_cross</span><br><span class="line">(name text, jan numeric, apr numeric, july numeric, oct numeric);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> crosstab</span><br><span class="line">(</span><br><span class="line">	<span class="string">&#x27;SELECT name, month, avg_temp FROM data_avg_temp ORDER  BY 1,2&#x27;</span>,</span><br><span class="line">	$$<span class="keyword">values</span>(<span class="string">&#x27;jan&#x27;</span>::text),(<span class="string">&#x27;apr&#x27;</span>::text),(<span class="string">&#x27;july&#x27;</span>::text),(<span class="string">&#x27;oct&#x27;</span>::text)$$</span><br><span class="line">)</span><br><span class="line"><span class="keyword">AS</span> data_avg_temp_cross</span><br><span class="line">(name text, jan <span class="type">numeric</span>, apr <span class="type">numeric</span>, july <span class="type">numeric</span>, oct <span class="type">numeric</span>);</span><br></pre></td></tr></table></figure>
 
 <p>或：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM crosstab</span><br><span class="line">(</span><br><span class="line">	&#39;SELECT name, month, avg_temp FROM data_avg_temp ORDER  BY 1,2&#39;,</span><br><span class="line">	&#39;SELECT DISTINCT month FROM data_avg_temp ORDER BY 1&#39;</span><br><span class="line">)</span><br><span class="line">AS data_avg_temp_cross</span><br><span class="line">(name text, jan numeric, apr numeric, july numeric, oct numeric);</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> crosstab</span><br><span class="line">(</span><br><span class="line">	<span class="string">&#x27;SELECT name, month, avg_temp FROM data_avg_temp ORDER  BY 1,2&#x27;</span>,</span><br><span class="line">	<span class="string">&#x27;SELECT DISTINCT month FROM data_avg_temp ORDER BY 1&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">AS</span> data_avg_temp_cross</span><br><span class="line">(name text, jan <span class="type">numeric</span>, apr <span class="type">numeric</span>, july <span class="type">numeric</span>, oct <span class="type">numeric</span>);</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
 <li>转换原理</li>
 </ol>
 <p>crosstab 内的第一个参数，是行转列的源表数据：</p>
-<p><code>&#39;SELECT name, month, avg_temp FROM data_avg_temp ORDER BY 1,2&#39;,</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;SELECT name, month, avg_temp FROM data_avg_temp ORDER BY 1,2&#x27;</span>,</span><br></pre></td></tr></table></figure>
+
 <p>crosstab 内的第二个参数，是行转列的那一列数据，有两种形式：</p>
 <ul>
 <li>  values 形式：</li>
 </ul>
-<p><code>$$values(&#39;jan&#39;::text),(&#39;apr&#39;::text),(&#39;july&#39;::text),(&#39;oct&#39;::text)$$</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$$<span class="keyword">values</span>(<span class="string">&#x27;jan&#x27;</span>::text),(<span class="string">&#x27;apr&#x27;</span>::text),(<span class="string">&#x27;july&#x27;</span>::text),(<span class="string">&#x27;oct&#x27;</span>::text)$$</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>  DISTINCT 形式：</li>
 </ul>
-<p><code>&#39;SELECT DISTINCT month FROM data_avg_temp ORDER BY 1&#39;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;SELECT DISTINCT month FROM data_avg_temp ORDER BY 1&#x27;</span></span><br></pre></td></tr></table></figure>
+
 <p>最后要定义转换后的表结构：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AS data_avg_temp_cross</span><br><span class="line">(name text, jan numeric, apr numeric, july numeric, oct numeric)</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">AS</span> data_avg_temp_cross</span><br><span class="line">(name text, jan <span class="type">numeric</span>, apr <span class="type">numeric</span>, july <span class="type">numeric</span>, oct <span class="type">numeric</span>)</span><br></pre></td></tr></table></figure>
 
 <h1 id="jsonb-列转行"><a href="#jsonb-列转行" class="headerlink" title="jsonb 列转行"></a>jsonb 列转行</h1><p>有某平均温度数据（data_avg_temp2）：</p>
 <table>
@@ -398,13 +403,14 @@
 <ol>
 <li>实现代码：</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SELECT name, (b.rec).key as month, (b.rec).value FROM</span><br><span class="line">(</span><br><span class="line">	SELECT name, jsonb_each(row_to_json(a)::jsonb-&#39;name&#39;::varchar) as rec FROM</span><br><span class="line">	(SELECT name, jan, apr, july, oct FROM data_avg_temp2) a</span><br><span class="line">) b</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> name, (b.rec).key <span class="keyword">as</span> <span class="keyword">month</span>, (b.rec).<span class="keyword">value</span> <span class="keyword">FROM</span></span><br><span class="line">(</span><br><span class="line">	<span class="keyword">SELECT</span> name, jsonb_each(row_to_json(a)::jsonb<span class="operator">-</span><span class="string">&#x27;name&#x27;</span>::<span class="type">varchar</span>) <span class="keyword">as</span> rec <span class="keyword">FROM</span></span><br><span class="line">	(<span class="keyword">SELECT</span> name, jan, apr, july, oct <span class="keyword">FROM</span> data_avg_temp2) a</span><br><span class="line">) b</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
 <li>转换原理</li>
 </ol>
 <p>关键点在于：</p>
-<p><code>jsonb_each(row_to_json(a)::jsonb-&#39;name&#39;::varchar)</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsonb_each(row_to_json(a)::jsonb<span class="operator">-</span><span class="string">&#x27;name&#x27;</span>::<span class="type">varchar</span>)</span><br></pre></td></tr></table></figure>
+
 <p>row_to_json(a)::jsonb 把行数据转为 JSON，例如：</p>
 <table>
 <thead>
@@ -522,7 +528,7 @@
     <img class="site-author-image" itemprop="image" alt="kaifeiji"
       src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">kaifeiji</p>
-  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br /></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -541,6 +547,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -559,18 +573,19 @@
         
 
         
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
 
 <div class="copyright">
   
-  &copy; 
+  &copy; 2008 – 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="far fa-paper-plane"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">kaifeiji</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
 
         
 
@@ -586,13 +601,9 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
 
 <script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
 
 
 <script src="/js/schemes/muse.js"></script>

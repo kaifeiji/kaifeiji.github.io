@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="为了降低成本、顺应开源化潮流，公司从 Oracle 转向了 PostgreSQL。由于是连平台一块换了，不存在迁移的问题，所以不需要使用 orafce、Ora2pg 之类的转换迁移工具，只需要了解语法差异，转换比较平稳。 PG 目前是数据库榜单上的探花，坐观榜眼 MySQL 和状元 Oracle，学习一下还是很有价值的！">
@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://kaifeiji.cc/post-images/postgresql-yu-oracle-de-yu-fa-chai-yi-zong-jie.png">
 <meta property="article:published_time" content="2019-07-07T04:39:26.000Z">
-<meta property="article:modified_time" content="2021-04-24T04:18:11.293Z">
+<meta property="article:modified_time" content="2021-04-24T05:54:42.432Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
@@ -81,7 +81,7 @@
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
+  <div class="container">
     <div class="headband"></div>
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -127,12 +127,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">46</span></a>
 
   </li>
   </ul>
@@ -149,6 +149,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -168,7 +169,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="kaifeiji">
-      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br />">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -193,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 12:18:11" itemprop="dateModified" datetime="2021-04-24T12:18:11+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 13:54:42" itemprop="dateModified" datetime="2021-04-24T13:54:42+08:00">2021-04-24</time>
               </span>
 
           
@@ -250,10 +251,10 @@
 </tbody></table>
 <h1 id="数据类型转换"><a href="#数据类型转换" class="headerlink" title="数据类型转换"></a>数据类型转换</h1><p>Oracle 和 PostgreSQL 都支持 to_char()、to_number()、to_date()的函数进行字符类型、数值类型和日期类型的转换。</p>
 <p>Oracle 在数据类型转换方面比较智能，能够在 SQL 中自动将数据转换为字段对应的类型，例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create tableA (name varchar2(36), score integer);</span><br><span class="line">--&#39;13&#39;被自动转换为13</span><br><span class="line">update tableA set score&#x3D;&#39;13&#39; where name&#x3D;&#39;张三&#39;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span>A (name varchar2(<span class="number">36</span>), score <span class="type">integer</span>);</span><br><span class="line"><span class="comment">--&#x27;13&#x27;被自动转换为13</span></span><br><span class="line">update tableA <span class="keyword">set</span> score<span class="operator">=</span><span class="string">&#x27;13&#x27;</span> <span class="keyword">where</span> name<span class="operator">=</span><span class="string">&#x27;张三&#x27;</span>;</span><br></pre></td></tr></table></figure>
 
 <p>PostgreSQL 在类似场景下就比较严格：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create tableA (name varchar(36), score int);</span><br><span class="line">--&#39;13&#39;被转换为13，::是PG特有的简化语法，等价于标准SQL的CAST(&#39;13&#39; AS INT)</span><br><span class="line">update tableA set score&#x3D;&#39;13&#39;::int where name&#x3D;&#39;张三&#39;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span>A (name <span class="type">varchar</span>(<span class="number">36</span>), score <span class="type">int</span>);</span><br><span class="line"><span class="comment">--&#x27;13&#x27;被转换为13，::是PG特有的简化语法，等价于标准SQL的CAST(&#x27;13&#x27; AS INT)</span></span><br><span class="line">update tableA <span class="keyword">set</span> score<span class="operator">=</span><span class="string">&#x27;13&#x27;</span>::<span class="type">int</span> <span class="keyword">where</span> name<span class="operator">=</span><span class="string">&#x27;张三&#x27;</span>;</span><br></pre></td></tr></table></figure>
 
 <h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><table>
 <thead>
@@ -321,37 +322,42 @@
 </tbody></table>
 <h1 id="MERGE-INTO-和-on-conflict-do"><a href="#MERGE-INTO-和-on-conflict-do" class="headerlink" title="MERGE INTO 和 on conflict() do"></a>MERGE INTO 和 on conflict() do</h1><p>Oracle 和 PostgreSQL 增删改查语法基本一致，有一点不同：</p>
 <p>Oracle 有强大的 MERGE INTO：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">MERGE INTO tableA AT a</span><br><span class="line">USING tableB AS b</span><br><span class="line">ON a.id&#x3D;b.id</span><br><span class="line">WHEN MATCHED--匹配则更新</span><br><span class="line">THEN UPDATE SET a.field&#x3D;b.field</span><br><span class="line">WHEN NOT MATCHED--无匹配则插入</span><br><span class="line">THEN INSERT VALUES (b.id,b.field)</span><br><span class="line">WHEN NOT MATCHED BY SOURCE--源表不存在则删除目标表</span><br><span class="line">THEN DELETE;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MERGE</span> <span class="keyword">INTO</span> tableA <span class="keyword">AT</span> a</span><br><span class="line"><span class="keyword">USING</span> tableB <span class="keyword">AS</span> b</span><br><span class="line"><span class="keyword">ON</span> a.id<span class="operator">=</span>b.id</span><br><span class="line"><span class="keyword">WHEN</span> MATCHED<span class="comment">--匹配则更新</span></span><br><span class="line"><span class="keyword">THEN</span> UPDATE <span class="keyword">SET</span> a.field<span class="operator">=</span>b.field</span><br><span class="line"><span class="keyword">WHEN</span> <span class="keyword">NOT</span> MATCHED<span class="comment">--无匹配则插入</span></span><br><span class="line"><span class="keyword">THEN</span> <span class="keyword">INSERT</span> <span class="keyword">VALUES</span> (b.id,b.field)</span><br><span class="line"><span class="keyword">WHEN</span> <span class="keyword">NOT</span> MATCHED <span class="keyword">BY</span> SOURCE<span class="comment">--源表不存在则删除目标表</span></span><br><span class="line"><span class="keyword">THEN</span> <span class="keyword">DELETE</span>;</span><br></pre></td></tr></table></figure>
 
 <p>PostgreSQL 可以使用 on conflict() do：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">insert into tableA</span><br><span class="line">	select id,field from tableB</span><br><span class="line">	on conflict (id)</span><br><span class="line">  do update set field &#x3D; exclude.field</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tableA</span><br><span class="line">	<span class="keyword">select</span> id,field <span class="keyword">from</span> tableB</span><br><span class="line">	<span class="keyword">on</span> conflict (id)</span><br><span class="line">  do update <span class="keyword">set</span> field <span class="operator">=</span> exclude.field</span><br></pre></td></tr></table></figure>
 
 <h1 id="查询语句"><a href="#查询语句" class="headerlink" title="查询语句"></a>查询语句</h1><ol>
 <li>查询表中最新 n 条数据</li>
 </ol>
 <p>Oracle 用 rownum：</p>
 <p>写法一：</p>
-<p><code>select t.* from (select * from tableA order by create_time desc) t where rownum &lt;= n;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> t.<span class="operator">*</span> <span class="keyword">from</span> (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tableA <span class="keyword">order</span> <span class="keyword">by</span> create_time <span class="keyword">desc</span>) t <span class="keyword">where</span> rownum <span class="operator">&lt;=</span> n;</span><br></pre></td></tr></table></figure>
+
 <p>写法二：</p>
-<p><code>select * from(select t.*, row_number() over(order by create_time desc) rn from tableA t) where rn &lt;=n;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span>(<span class="keyword">select</span> t.<span class="operator">*</span>, <span class="built_in">row_number</span>() <span class="keyword">over</span>(<span class="keyword">order</span> <span class="keyword">by</span> create_time <span class="keyword">desc</span>) rn <span class="keyword">from</span> tableA t) <span class="keyword">where</span> rn <span class="operator">&lt;=</span>n;</span><br></pre></td></tr></table></figure>
+
 <p>上述写法一为通用常规写法；写法二可以对分组后数据排序，分组语句写在 over()中</p>
 <p>postgreSQL 用 limit：</p>
-<p><code>select * from tableA order by create_time desc limit n;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> tableA <span class="keyword">order</span> <span class="keyword">by</span> create_time <span class="keyword">desc</span> limit n;</span><br></pre></td></tr></table></figure>
+
 <p>注意：limit 必须用于 order by 之后</p>
 <ol start="2">
 <li>子查询</li>
 </ol>
 <p>Oracle 子查询用括号包起来即可，无需加别名（Alias）:</p>
-<p><code>select name from (select id,name from tableA) ;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> name <span class="keyword">from</span> (<span class="keyword">select</span> id,name <span class="keyword">from</span> tableA) ;</span><br></pre></td></tr></table></figure>
+
 <p>postgreSQL 子查询要求比较严格，必须具有别名：</p>
-<p><code>select a.name from (select id,name from tableA) a;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> a.name <span class="keyword">from</span> (<span class="keyword">select</span> id,name <span class="keyword">from</span> tableA) a;</span><br></pre></td></tr></table></figure>
+
 <h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><p>Oracle 中，通过 commit/rollback 来实现事务提交或回滚。结构类似于：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">begin</span><br><span class="line">    select ...</span><br><span class="line">    update ...</span><br><span class="line">    delete ...</span><br><span class="line">    commit;</span><br><span class="line">exception</span><br><span class="line">    when others then</span><br><span class="line">    rollback;</span><br><span class="line">end;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">begin</span></span><br><span class="line">    <span class="keyword">select</span> ...</span><br><span class="line">    update ...</span><br><span class="line">    <span class="keyword">delete</span> ...</span><br><span class="line">    <span class="keyword">commit</span>;</span><br><span class="line">exception</span><br><span class="line">    <span class="keyword">when</span> others <span class="keyword">then</span></span><br><span class="line">    <span class="keyword">rollback</span>;</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
 
 <p>PostgreSQL 实际上把每个 SQL 语句当做在一个事务中执行来看待。</p>
 <p>如果你没有发出 BEGIN 命令，那么每个独立的语句都被一个隐含的 BEGIN 和(如果成功的话)COMMIT 包围。</p>
 <p>一组包围在 BEGIN 和 COMMIT 之间的语句有时候被称做事务块。例如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">BEGIN;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance - 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Alice&#39;;</span><br><span class="line">SAVEPOINT my_savepoint;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance + 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Bob&#39;;</span><br><span class="line">-- 呀！加错钱了，应该用 Wally 的账号</span><br><span class="line">ROLLBACK TO my_savepoint;</span><br><span class="line">UPDATE accounts SET balance &#x3D; balance + 100.00</span><br><span class="line">    WHERE name &#x3D; &#39;Wally&#39;;</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line">UPDATE accounts <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">-</span> <span class="number">100.00</span></span><br><span class="line">    <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Alice&#x27;</span>;</span><br><span class="line"><span class="keyword">SAVEPOINT</span> my_savepoint;</span><br><span class="line">UPDATE accounts <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">+</span> <span class="number">100.00</span></span><br><span class="line">    <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Bob&#x27;</span>;</span><br><span class="line"><span class="comment">-- 呀！加错钱了，应该用 Wally 的账号</span></span><br><span class="line"><span class="keyword">ROLLBACK</span> <span class="keyword">TO</span> my_savepoint;</span><br><span class="line">UPDATE accounts <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">+</span> <span class="number">100.00</span></span><br><span class="line">    <span class="keyword">WHERE</span> name <span class="operator">=</span> <span class="string">&#x27;Wally&#x27;</span>;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
 
 <p>在 PL/pgSQL 中，也提供了类似于 Oracle 的 Begin、End 及 ExceptionCode 处理机制。他们之间的差异不明显。事实上，PL/SQL（Oracle 数据库操作语言）与 PL/pgSQL 是高度相似的，这让 procedure 在 Oracle 与 Postgresql 之间迁移变得极为便捷。</p>
 
@@ -447,7 +453,7 @@
     <img class="site-author-image" itemprop="image" alt="kaifeiji"
       src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">kaifeiji</p>
-  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br /></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -466,6 +472,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -484,18 +498,19 @@
         
 
         
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
 
 <div class="copyright">
   
-  &copy; 
+  &copy; 2008 – 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="far fa-paper-plane"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">kaifeiji</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
 
         
 
@@ -511,13 +526,9 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
 
 <script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
 
 
 <script src="/js/schemes/muse.js"></script>

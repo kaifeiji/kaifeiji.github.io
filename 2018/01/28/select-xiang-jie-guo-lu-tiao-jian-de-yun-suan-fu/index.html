@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="SELECT 中的过滤条件的运算符包括关系运算符、逻辑运算符、范围运算符。 关系运算符：&#x3D;（等于）、&gt;（大于）、&gt;&#x3D;（大于等于）、&lt;（小于）、&lt;&#x3D;（小于等于）、&lt;&gt;（不等于） 逻辑运算符：AND（与）、OR（或）、NOT（非） 范围运算符：IS（是）、BETWEEN（介于）、IN（在…中）、EXISTS（存在）、LIKE（通配）">
@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://kaifeiji.cc/post-images/select-xiang-jie-guo-lu-tiao-jian-de-yun-suan-fu.jpg">
 <meta property="article:published_time" content="2018-01-28T05:10:17.000Z">
-<meta property="article:modified_time" content="2021-04-24T04:17:59.790Z">
+<meta property="article:modified_time" content="2021-04-24T05:56:48.558Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
@@ -81,7 +81,7 @@
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
+  <div class="container">
     <div class="headband"></div>
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -127,12 +127,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">46</span></a>
 
   </li>
   </ul>
@@ -149,6 +149,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -168,7 +169,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="kaifeiji">
-      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br />">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -193,7 +194,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 12:17:59" itemprop="dateModified" datetime="2021-04-24T12:17:59+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 13:56:48" itemprop="dateModified" datetime="2021-04-24T13:56:48+08:00">2021-04-24</time>
               </span>
 
           
@@ -215,48 +216,59 @@
 <span id="more"></span>
 
 <h1 id="一、关系运算符"><a href="#一、关系运算符" class="headerlink" title="一、关系运算符"></a>一、关系运算符</h1><p>关系运算符很容易理解：判断关系运算符两侧的值是否满足条件。</p>
-<p><code>SELECT * FROM student WHERE name=&#39;张三&#39;;--过滤出姓名为张三的学生</code></p>
-<p><code>SELECT * FROM student WHERE age&gt;18;--过滤出年龄大于18的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> name<span class="operator">=</span><span class="string">&#x27;张三&#x27;</span>;</span><br><span class="line"><span class="comment">--过滤出姓名为张三的学生</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> age<span class="operator">&gt;</span><span class="number">18</span>;</span><br><span class="line"><span class="comment">--过滤出年龄大于18的学生</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="二、逻辑运算符"><a href="#二、逻辑运算符" class="headerlink" title="二、逻辑运算符"></a>二、逻辑运算符</h1><ol>
 <li>AND（与）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE sex=&#39;Male&#39; AND age&gt;18;--过滤出年龄大于18的男学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> sex<span class="operator">=</span><span class="string">&#x27;Male&#x27;</span> <span class="keyword">AND</span> age<span class="operator">&gt;</span><span class="number">18</span>;</span><br><span class="line"><span class="comment">--过滤出年龄大于18的男学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="2">
 <li>OR（或）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE age&gt;18 OR sex=&#39;Female&#39;;--过滤出年龄大于18或性别为女的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> age<span class="operator">&gt;</span><span class="number">18</span> <span class="keyword">OR</span> sex<span class="operator">=</span><span class="string">&#x27;Female&#x27;</span>;</span><br><span class="line"><span class="comment">--过滤出年龄大于18或性别为女的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="3">
 <li>NOT（非）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE NOT age&gt;18&#39;;--过滤出年龄不大于18的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> <span class="keyword">NOT</span> age<span class="operator">&gt;</span><span class="number">18</span><span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出年龄不大于18的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="4">
 <li>逻辑运算符优先级</li>
 </ol>
 <p>NOT&gt;OR&gt;AND，但为避免混乱，一般用()来明确优先级：</p>
-<p><code>SELECT * FROM student WHERE sex=&#39;Female&#39; AND (age&gt;18 OR age&lt;14);--过滤出年龄大于18或小于14的女学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> sex<span class="operator">=</span><span class="string">&#x27;Female&#x27;</span> <span class="keyword">AND</span> (age<span class="operator">&gt;</span><span class="number">18</span> <span class="keyword">OR</span> age<span class="operator">&lt;</span><span class="number">14</span>);</span><br><span class="line"><span class="comment">--过滤出年龄大于18或小于14的女学生</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="三、范围运算符"><a href="#三、范围运算符" class="headerlink" title="三、范围运算符"></a>三、范围运算符</h1><ol>
 <li>IS（是）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE sex IS NULL&#39;;--过滤出性别为空的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> sex <span class="keyword">IS</span> <span class="keyword">NULL</span><span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出性别为空的学生</span></span><br></pre></td></tr></table></figure>
+
 <p>可以使用 NOT 关键字取 IS（是）的补集 IS NOT（不是），同理以下的范围运算符也可以使用：NOT BETWEEN、NOT IN、NOT EXISTS、NOT LIKE。</p>
-<p><code>SELECT * FROM student WHERE sex IS NOT NULL&#39;;--过滤出性别不为空的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> sex <span class="keyword">IS</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span><span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出性别不为空的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="3">
 <li>BETWEEN（介于）</li>
 </ol>
 <p>需要注意的是，BETWEEN 的范围是闭合全集，即包括 14 岁和 18 岁。</p>
-<p><code>SELECT * FROM student WHERE age BETWEEN 14 and 18&#39;;--过滤出年龄介于14和18的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> age <span class="keyword">BETWEEN</span> <span class="number">14</span> <span class="keyword">and</span> <span class="number">18</span><span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出年龄介于14和18的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="5">
 <li>IN（在…中）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE name in (&#39;张三&#39;,&#39;李四&#39;)&#39;;--过滤出姓名在括号中的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> name <span class="keyword">in</span> (<span class="string">&#x27;张三&#x27;</span>,<span class="string">&#x27;李四&#x27;</span>)<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出姓名在括号中的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="7">
 <li>EXISTS（存在）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE EXISTS (SELECT 1 FROM score WHERE name=student.name)&#39;;--过滤出在成绩表中有记录的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> <span class="keyword">EXISTS</span> (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> score <span class="keyword">WHERE</span> name<span class="operator">=</span>student.name)<span class="string">&#x27;;</span></span><br><span class="line"><span class="string">--过滤出在成绩表中有记录的学生</span></span><br></pre></td></tr></table></figure>
+
 <ol start="9">
 <li>LIKE（通配）</li>
 </ol>
-<p><code>SELECT * FROM student WHERE name like &#39;张%&#39;;--过滤出姓张的学生</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> student <span class="keyword">WHERE</span> name <span class="keyword">like</span> <span class="string">&#x27;张%&#x27;</span>;</span><br><span class="line"><span class="comment">--过滤出姓张的学生</span></span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -350,7 +362,7 @@
     <img class="site-author-image" itemprop="image" alt="kaifeiji"
       src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">kaifeiji</p>
-  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br /></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -369,6 +381,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -387,18 +407,19 @@
         
 
         
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
 
 <div class="copyright">
   
-  &copy; 
+  &copy; 2008 – 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="far fa-paper-plane"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">kaifeiji</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
 
         
 
@@ -414,13 +435,9 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
 
 <script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
 
 
 <script src="/js/schemes/muse.js"></script>

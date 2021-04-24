@@ -12,11 +12,11 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="刚开始接触数据库时，对数据库的实例、用户、方案和表空间的概念和关系比较迷惑。 经过一段时间使用 Oracle，有了初步的认识，在这里记录一下。">
@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://kaifeiji.cc/post-images/oracle-de-shi-li-yong-hu-fang-an-he-biao-kong-jian.jpg">
 <meta property="og:image" content="http://kaifeiji.cc/post-images/1561173578697.jpg">
 <meta property="article:published_time" content="2018-01-25T10:12:18.000Z">
-<meta property="article:modified_time" content="2021-04-24T04:17:59.798Z">
+<meta property="article:modified_time" content="2021-04-24T05:51:41.017Z">
 <meta property="article:author" content="kaifeiji">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
@@ -82,7 +82,7 @@
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
+  <div class="container">
     <div class="headband"></div>
 
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -128,12 +128,12 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">46</span></a>
 
   </li>
   </ul>
@@ -150,6 +150,7 @@
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 
     <main class="main">
@@ -169,7 +170,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
       <meta itemprop="name" content="kaifeiji">
-      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br />">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -194,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-24 12:17:59" itemprop="dateModified" datetime="2021-04-24T12:17:59+08:00">2021-04-24</time>
+                <time title="修改时间：2021-04-24 13:51:41" itemprop="dateModified" datetime="2021-04-24T13:51:41+08:00">2021-04-24</time>
               </span>
 
           
@@ -227,17 +228,20 @@
 <p>这三个角度都正确，但是加起来才是完整的实例。一个 ORCL 实例，实际数据存储在 oradata 下的表空间文件中，通过运行 OracleServicesORCL，为连接 127.0.0.1/ORCL 的用户提供数据服务。</p>
 <h1 id="表空间（Tablespace）"><a href="#表空间（Tablespace）" class="headerlink" title="表空间（Tablespace）"></a>表空间（Tablespace）</h1><p>在一些业务库中，为了便于记忆和对应，常将用户和表空间创建为同名。这样做对于新手而言造成了概念理解上的混淆，分不清用户和表空间的区别。</p>
 <p>上文所说，实例的表空间都存储在“oradata\实例名\”文件夹下（这是表空间的默认存储位置，也可以存在其他文件夹），创建表空间的语句示例：</p>
-<p><code>create tablespace test_ts logging datafile &#39;C:\Oracle\oradata\orcl\test_ts.dbf&#39; size 50m;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span>space test_ts logging datafile <span class="string">&#x27;C:\Oracle\oradata\orcl\test_ts.dbf&#x27;</span> size <span class="number">50</span>m;</span><br></pre></td></tr></table></figure>
+
 <p>从上述语句可见，创建表空间是需要指定表空间的路径的，也就是说表空间实际上对应的是文件，是数据的物理存储位置。</p>
 <h2 id="用户（User）"><a href="#用户（User）" class="headerlink" title="用户（User）"></a>用户（User）</h2><p>相对应的，用户代表了数据的逻辑存储位置，接着来看用户的创建示例：</p>
-<p><code>create user test_user identified by 123 default tablespace test_ts;</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">user</span> test_user identified <span class="keyword">by</span> <span class="number">123</span> <span class="keyword">default</span> tablespace test_ts;</span><br></pre></td></tr></table></figure>
+
 <p>创建用户的语句，指定了默认表空间为 test_ts，把数据的逻辑存储和物理存储关联起来，也就是用户 test_user 在创建表、函数、存储过程、包等数据库对象时，会把数据存储在默认的表空间 test_ts。</p>
 <p>所谓用户是数据的逻辑存储位置，也可以理解为，用户是这些表、函数、存储过程、包等数据库对象的所有者。</p>
 <p>因此，当其他用户的数据库对象需要调用 test_user 的数据库对象时，需要加上“test_user.”前缀，例如：</p>
 <p>user_A 需要调用 test_user 的表 test_table，那么 user_A 是不能直接使用表名 test_table 的，而需要使用 test_user.test_table。</p>
 <h1 id="导入导出"><a href="#导入导出" class="headerlink" title="导入导出"></a>导入导出</h1><p>在系统部署和迁移场景中，使用 expdp 导出和 impdp 导入 Oracle 数据库是是一个常见的操作。</p>
 <p>导入命令结构如下：</p>
-<p><code>impdp 用户名/密码@IP/实例名 directory=DATA_DUMP_DIR dumpfile=dmp文件名 logfile=日志文件名 schemas=dmp中的用户名</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impdp 用户名/密码@IP/实例名 directory=DATA_DUMP_DIR dumpfile=dmp文件名 logfile=日志文件名 schemas=dmp中的用户名</span><br></pre></td></tr></table></figure>
+
 <p>在 cmd、bat 或 sqlplus 中执行该语句时：</p>
 <ol>
 <li><p>如果数据库中已经存在 dmp 中的用户名，那么 dmp 的数据将导入到相同用户名下的表空间，例如 dmp 中的用户是 userA，dmp 中的表空间是 tsA，数据库中已有 userA，且 userA 默认的表空间是 tsA，那么 dmp 中的数据将导入到 userA 中，数据的物理存储位置是表空间 tsA。</p>
@@ -247,7 +251,8 @@
 </ol>
 <p>因此，执行该命令时，可以不必在数据库中建立和 dmp 中相同的用户名，但是必须要建立和 dmp 中相同的表空间名。</p>
 <p>如果我想要用不同的用户名和不同的表空间怎么办？这就需要用到 impdp 命令的 remap_schema 和 remap_tablespace：</p>
-<p><code>impdp system/123@127.0.0.1/orcl directory=DATA_DUMP_DIR dumpfile=xxx.dmp logfile=xxx.log schemas=userA remap_schema=userA:userB remap_tablespace=tsA:tsB</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impdp system/123@127.0.0.1/orcl directory=DATA_DUMP_DIR dumpfile=xxx.dmp logfile=xxx.log schemas=userA remap_schema=userA:userB remap_tablespace=tsA:tsB</span><br></pre></td></tr></table></figure>
+
 <p>这样就可以把数据导入到用户 userB 和表空间 tsB 中了，当然前提是，必须要事先创建用户 userB 和表空间 tsB。</p>
 <p>扩展知识：</p>
 <p>在 impdp 命令中，有一个 directory=DATA_DUMP_DIR 的参数，这个参数指定的是导入 dmp 所在的文件夹。“DATA_DUMP_DIR”指向的是 Oracle 数据库中的文件夹（Directory）对象，是数据库默认自带的导入导出文件夹。</p>
@@ -357,7 +362,7 @@
     <img class="site-author-image" itemprop="image" alt="kaifeiji"
       src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">kaifeiji</p>
-  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！</div>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾<br />日常做做手工、吹吹笛子<br /><br />最近在玩树莓派！<br /><br /></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -376,6 +381,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
 
 
 
@@ -394,18 +407,19 @@
         
 
         
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
 
 <div class="copyright">
   
-  &copy; 
+  &copy; 2008 – 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="far fa-paper-plane"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">kaifeiji</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
-  </div>
 
         
 
@@ -421,13 +435,9 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.1.0/lib/anime.min.js"></script>
 
 <script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
 
 
 <script src="/js/schemes/muse.js"></script>
