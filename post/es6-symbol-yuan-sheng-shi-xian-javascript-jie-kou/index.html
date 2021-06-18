@@ -27,7 +27,7 @@
 <meta property="og:description" content="翻译了2017年的一篇文章，介绍如何用Symbol实现JavaScript接口。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-11T08:52:55.000Z">
-<meta property="article:modified_time" content="2021-05-11T09:46:37.022Z">
+<meta property="article:modified_time" content="2021-05-13T01:12:24.649Z">
 <meta property="article:author" content="kaifeiji">
 <meta name="twitter:card" content="summary">
 
@@ -124,7 +124,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">117</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">122</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -134,7 +134,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">42</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">44</span></a>
 
   </li>
   </ul>
@@ -230,7 +230,7 @@
 <blockquote>
 <p>原文：<a target="_blank" rel="noopener" href="https://codeburst.io/interfaces-in-JavaScript-with-es6-naive-implementation-91b703110a09">Interfaces in JavaScript with ES6 Symbol. Naive implementation</a></p>
 </blockquote>
-<p>众所周知，JavaScript用独特的方式实现了OOP（面向对象），与C#和Java的实现方式非常不同。在ES6之前，JavaScript是不支持类（<code>class</code>）的，因此OOP是通过原型（<code>prototype</code>）和其他一些自定义的方式实现的。现在<code>class</code>类已经是JavaScript语言的一部分，而且逐渐被广泛使用，人们开始想要更进一步，在JavaScript中使用接口（<code>interface</code>）。为了满足这个需求，有人提出了<a target="_blank" rel="noopener" href="https://github.com/michaelficarra/proposal-first-class-protocols">first class protocols</a>。但这一提案仍初于Stage 1，所以距离成为语言标准还有很长的时间。我们在JavaScript的现状下，如何实现这一目的呢：</p>
+<p>众所周知，JavaScript用独特的方式实现了OOP（面向对象），与C#和Java的实现方式非常不同。在ES6之前，JavaScript是不支持类（<code>class</code>）的，因此OOP是通过原型（<code>prototype</code>）和其他一些自定义的方式实现的。现在<code>class</code>类已经是JavaScript语言的一部分，而且逐渐被广泛使用，人们开始想要更进一步，在JavaScript中使用接口（<code>interface</code>）。为了满足这个需求，有人提出了<a target="_blank" rel="noopener" href="https://github.com/michaelficarra/proposal-first-class-protocols">first class protocols</a>。但这一提案仍处于Stage 1，所以距离成为语言标准还有很长的时间。我们在JavaScript的现状下，如何实现这一目的呢：</p>
 <ol>
 <li><p><em>不要简单的使用<strong>鸭子类型</strong>去实现</em>。有时候，这种方式也满足使用，但在许多情况下会导致应用发生不可预测的问题。</p>
 </li>
@@ -238,7 +238,7 @@
 </li>
 <li><p><em>使用TypeScript</em>。Typescript作为JavaScript的超集，原生支持接口，但对我们的项目而言，切换到TypeScript成本太大。</p>
 </li>
-<li><p><em>使用代理（<code>Proxy</code>）</em>。不幸的是，Babel不支持Proxy语法：<code>由于ES5的限制，代理无法被转译，。详见不同JavaScript引擎的支持情况</code>。</p>
+<li><p><em>使用代理（<code>Proxy</code>）</em>。不幸的是，Babel不支持Proxy语法：<code>由于ES5的限制，代理无法被转译。详见不同JavaScript引擎的支持情况</code>。</p>
 </li>
 <li><p><em>使用Symbol数据类型</em>。ES6标准增加了新的<code>Symbol</code>数据类型，具有非常重要的特性：</p>
 </li>
@@ -272,7 +272,10 @@
     <a href="/post/nei-wang-da-jian-npm-si-fu-verdaccio/" rel="prev" title="内网搭建npm私服——Verdaccio">
       <i class="fa fa-chevron-left"></i> 内网搭建npm私服——Verdaccio
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/post/lao-sheng-chang-tan-vue-zu-jian-jian-chuan-zhi/" rel="next" title="老生常谈：Vue组件间传值">
+      老生常谈：Vue组件间传值 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -347,7 +350,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">44</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -360,7 +363,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">117</span>
+        <span class="site-state-item-count">122</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
