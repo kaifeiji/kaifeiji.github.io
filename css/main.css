@@ -1216,7 +1216,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #df4693;
+  background: #1f83ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2485,17 +2485,4 @@ hr {
 }
 .sub-menu .menu-item {
   display: inline-block;
-}
-/* 滚动条 */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  border: 3px solid transparent;
-}
-::-webkit-scrollbar-thumb {
-  min-height: 20px;
-  box-shadow: 0 0 0 5px rgba(0,0,0,0.5) inset;
 }
