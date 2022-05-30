@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="网上有很多二三维视角同步的案例，但大多是基于可视四至范围和缩放级别的，其缺陷就是不能准确的还原，三维视角中的地物，在二维视角中的大小和方位关系。 参考ol-cesium库，实现了基于分辨率和视野中心的二三维视角同步（Cesium同步到OpenLayers）。 在旋转、俯仰、平移时，这种同步方式能最大程度的还原三维视角地物在二维视角中的展现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenLayers与Cesium视角同步（基于分辨率和视野中心）">
+<meta property="og:url" content="http://kaifeiji.cc/post/ol-cesium/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="网上有很多二三维视角同步的案例，但大多是基于可视四至范围和缩放级别的，其缺陷就是不能准确的还原，三维视角中的地物，在二维视角中的大小和方位关系。 参考ol-cesium库，实现了基于分辨率和视野中心的二三维视角同步（Cesium同步到OpenLayers）。 在旋转、俯仰、平移时，这种同步方式能最大程度的还原三维视角地物在二维视角中的展现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-28T07:54:03.000Z">
+<meta property="article:modified_time" content="2022-01-28T08:18:00.000Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="Cesium">
+<meta property="article:tag" content="OpenLayers">
+<meta property="article:tag" content="同步">
+<meta property="article:tag" content="分辨率">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://kaifeiji.cc/post/ol-cesium/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OpenLayers与Cesium视角同步（基于分辨率和视野中心） | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/post/ol-cesium/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br />">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenLayers与Cesium视角同步（基于分辨率和视野中心）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-28 15:54:03" itemprop="dateCreated datePublished" datetime="2022-01-28T15:54:03+08:00">2022-01-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/post/ol-cesium/" class="post-meta-item leancloud_visitors" data-flag-title="OpenLayers与Cesium视角同步（基于分辨率和视野中心）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/post/ol-cesium/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/post/ol-cesium/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>网上有很多二三维视角同步的案例，但大多是基于可视四至范围和缩放级别的，其缺陷就是不能准确的还原，三维视角中的地物，在二维视角中的大小和方位关系。</p>
+<p>参考ol-cesium库，实现了基于分辨率和视野中心的二三维视角同步（Cesium同步到OpenLayers）。</p>
+<p>在旋转、俯仰、平移时，这种同步方式能最大程度的还原三维视角地物在二维视角中的展现。</p>
+<span id="more"></span>
+
+<h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Cesium的KEY</span></span><br><span class="line"><span class="title class_">Cesium</span>.<span class="property">Ion</span>.<span class="property">defaultAccessToken</span> = <span class="string">&#x27;xxx&#x27;</span>;</span><br><span class="line"><span class="comment">// 初始化Cesium的view</span></span><br><span class="line"><span class="keyword">const</span> viewer = <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Viewer</span>(<span class="string">&#x27;cesiumContainer&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">terrainProvider</span>: <span class="title class_">Cesium</span>.<span class="title function_">createWorldTerrain</span>(),</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 初始化OpenLayers的olMap</span></span><br><span class="line"><span class="keyword">const</span> olMap = <span class="keyword">new</span> ol.<span class="title class_">Map</span>(&#123;</span><br><span class="line">  <span class="attr">target</span>: <span class="string">&#x27;olContainer&#x27;</span>,</span><br><span class="line">  <span class="attr">view</span>: <span class="keyword">new</span> ol.<span class="title class_">View</span>(&#123;</span><br><span class="line">    <span class="attr">projection</span>: <span class="keyword">new</span> ol.<span class="property">proj</span>.<span class="title class_">Projection</span>(&#123;</span><br><span class="line">      <span class="attr">code</span>: <span class="string">&#x27;EPSG:3857&#x27;</span>,</span><br><span class="line">      <span class="attr">units</span>: <span class="string">&#x27;m&#x27;</span>,</span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="attr">center</span>: [<span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">    <span class="attr">extent</span>: [-<span class="number">20037508.3427892</span>, -<span class="number">20037508.3427892</span>, <span class="number">20037508.3427892</span>, <span class="number">20037508.3427892</span>],</span><br><span class="line">    <span class="attr">zoom</span>: <span class="number">2</span>,</span><br><span class="line">  &#125;),</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 添加与Cesium相同的底图</span></span><br><span class="line">olMap.<span class="title function_">addLayer</span>(</span><br><span class="line">  <span class="keyword">new</span> ol.<span class="property">layer</span>.<span class="title class_">Tile</span>(&#123;</span><br><span class="line">    <span class="attr">visible</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">preload</span>: <span class="title class_">Infinity</span>,</span><br><span class="line">    <span class="attr">source</span>: <span class="keyword">new</span> ol.<span class="property">source</span>.<span class="title class_">BingMaps</span>(&#123;</span><br><span class="line">      <span class="attr">key</span>: <span class="string">&#x27;Aq6cnEx1WH4FDmEW0of-dclQvXRBx3YqpvkWX6_L-NWO2HMbtq6WzhENNYr4G7cZ&#x27;</span>,</span><br><span class="line">      <span class="attr">imagerySet</span>: <span class="string">&#x27;Aerial&#x27;</span>,</span><br><span class="line">      <span class="comment">// use maxZoom 19 to see stretched tiles instead of the BingMaps</span></span><br><span class="line">      <span class="comment">// &quot;no photos at this zoom level&quot; tiles</span></span><br><span class="line">      <span class="comment">// maxZoom: 19</span></span><br><span class="line">    &#125;),</span><br><span class="line">  &#125;)</span><br><span class="line">);</span><br><span class="line"><span class="comment">// Cesium绑定事件：视角变化时，执行updateView</span></span><br><span class="line">viewer.<span class="property">camera</span>.<span class="property">changed</span>.<span class="title function_">addEventListener</span>(updateView);</span><br><span class="line">viewer.<span class="property">camera</span>.<span class="property">percentageChanged</span> = <span class="number">0.01</span>;</span><br><span class="line"><span class="comment">// Cesium飞到怀柔</span></span><br><span class="line">viewer.<span class="property">camera</span>.<span class="title function_">flyTo</span>(&#123;</span><br><span class="line">  <span class="attr">destination</span>: <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">fromDegrees</span>(<span class="number">115.82</span>, <span class="number">40.475</span>, <span class="number">60000</span>),</span><br><span class="line">  <span class="attr">orientation</span>: &#123;</span><br><span class="line">    <span class="attr">heading</span>: <span class="title class_">Cesium</span>.<span class="property">Math</span>.<span class="title function_">toRadians</span>(<span class="number">0.0</span>),</span><br><span class="line">    <span class="attr">pitch</span>: <span class="title class_">Cesium</span>.<span class="property">Math</span>.<span class="title function_">toRadians</span>(-<span class="number">90.0</span>),</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 核心函数，更新视角</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateView</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// 获取Cesium的视野中心作为目标点位</span></span><br><span class="line">  <span class="keyword">const</span> ellipsoid = <span class="title class_">Cesium</span>.<span class="property">Ellipsoid</span>.<span class="property">WGS84</span>;</span><br><span class="line">  <span class="keyword">const</span> scene = viewer.<span class="property">scene</span>;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="title function_">pickCenterPoint</span>(scene);</span><br><span class="line">  <span class="comment">// 如果视野中心没获取到，取摄像机所在位置为目标点位</span></span><br><span class="line">  <span class="keyword">let</span> bestTarget = target;</span><br><span class="line">  <span class="keyword">if</span> (!bestTarget) &#123;</span><br><span class="line">    <span class="keyword">const</span> globe = scene.<span class="property">globe</span>;</span><br><span class="line">    <span class="keyword">const</span> carto = viewer.<span class="property">camera</span>.<span class="property">positionCartographic</span>.<span class="title function_">clone</span>();</span><br><span class="line">    <span class="keyword">const</span> height = globe.<span class="title function_">getHeight</span>(carto);</span><br><span class="line">    carto.<span class="property">height</span> = height || <span class="number">0</span>;</span><br><span class="line">    bestTarget = <span class="title class_">Cesium</span>.<span class="property">Elliposoid</span>.<span class="property">WGS84</span>.<span class="title function_">cartographicToCartesian</span>(carto);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 计算摄像机到目标点位的距离</span></span><br><span class="line">  <span class="keyword">const</span> distance = <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">distance</span>(bestTarget, viewer.<span class="property">camera</span>.<span class="property">position</span>);</span><br><span class="line">  <span class="comment">// 目标点位作为ol地图的中心</span></span><br><span class="line">  <span class="keyword">const</span> bestTargetCartographic = ellipsoid.<span class="title function_">cartesianToCartographic</span>(bestTarget);</span><br><span class="line">  <span class="keyword">const</span> view = olMap.<span class="title function_">getView</span>();</span><br><span class="line">  <span class="keyword">const</span> center = ol.<span class="property">proj</span>.<span class="title function_">transform</span>([(bestTargetCartographic.<span class="property">longitude</span> * <span class="number">180</span>) / <span class="title class_">Math</span>.<span class="property">PI</span>, (bestTargetCartographic.<span class="property">latitude</span> * <span class="number">180</span>) / <span class="title class_">Math</span>.<span class="property">PI</span>], <span class="string">&#x27;EPSG:4326&#x27;</span>, <span class="string">&#x27;EPSG:3857&#x27;</span>);</span><br><span class="line">  view.<span class="title function_">setCenter</span>(center);</span><br><span class="line">  <span class="comment">// 计算Cesium的分辨率，设置ol为相同的分辨率</span></span><br><span class="line">  <span class="keyword">const</span> resolution = <span class="title function_">calcResolutionForDistance</span>(distance, bestTargetCartographic ? bestTargetCartographic.<span class="property">latitude</span> : <span class="number">0</span>, scene, view.<span class="title function_">getProjection</span>());</span><br><span class="line">  view.<span class="title function_">setResolution</span>(resolution);</span><br><span class="line">  <span class="comment">// 计算Cesium的旋转角度，设置ol的旋转角度</span></span><br><span class="line">  <span class="keyword">if</span> (target) &#123;</span><br><span class="line">    <span class="keyword">const</span> pos = viewer.<span class="property">camera</span>.<span class="property">position</span>;</span><br><span class="line">    <span class="keyword">const</span> targetNormal = <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Cartesian3</span>();</span><br><span class="line">    ellipsoid.<span class="title function_">geocentricSurfaceNormal</span>(target, targetNormal);</span><br><span class="line">    <span class="keyword">const</span> targetToCamera = <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Cartesian3</span>();</span><br><span class="line">    <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">subtract</span>(pos, target, targetToCamera);</span><br><span class="line">    <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">normalize</span>(targetToCamera, targetToCamera);</span><br><span class="line">    <span class="keyword">const</span> up = viewer.<span class="property">camera</span>.<span class="property">up</span>;</span><br><span class="line">    <span class="keyword">const</span> right = viewer.<span class="property">camera</span>.<span class="property">right</span>;</span><br><span class="line">    <span class="keyword">const</span> normal = <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Cartesian3</span>(-target.<span class="property">y</span>, target.<span class="property">x</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> heading = <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">angleBetween</span>(right, normal);</span><br><span class="line">    <span class="keyword">const</span> cross = <span class="title class_">Cesium</span>.<span class="property">Cartesian3</span>.<span class="title function_">cross</span>(target, up, <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Cartesian3</span>());</span><br><span class="line">    <span class="keyword">const</span> orientation = cross.<span class="property">z</span>;</span><br><span class="line">    view.<span class="title function_">setRotation</span>(orientation &lt; <span class="number">0</span> ? heading : -heading);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    view.<span class="title function_">setRotation</span>(viewer.<span class="property">camera</span>.<span class="property">heading</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">pickCenterPoint</span>(<span class="params">scene</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> canvas = scene.<span class="property">canvas</span>;</span><br><span class="line">  <span class="keyword">const</span> center = <span class="keyword">new</span> <span class="title class_">Cesium</span>.<span class="title class_">Cartesian2</span>(canvas.<span class="property">clientWidth</span> / <span class="number">2</span>, canvas.<span class="property">clientHeight</span> / <span class="number">2</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">pickOnTerrainOrEllipsoid</span>(scene, center);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">pickOnTerrainOrEllipsoid</span>(<span class="params">scene, pixel</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> ray = scene.<span class="property">camera</span>.<span class="title function_">getPickRay</span>(pixel);</span><br><span class="line">  <span class="keyword">const</span> target = scene.<span class="property">globe</span>.<span class="title function_">pick</span>(ray, scene);</span><br><span class="line">  <span class="keyword">return</span> target || scene.<span class="property">camera</span>.<span class="title function_">pickEllipsoid</span>(pixel);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">calcResolutionForDistance</span>(<span class="params">distance, latitude, scene, projection</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> canvas = scene.<span class="property">canvas</span>;</span><br><span class="line">  <span class="keyword">const</span> camera = scene.<span class="property">camera</span>;</span><br><span class="line">  <span class="keyword">const</span> fovy = camera.<span class="property">frustum</span>.<span class="property">fovy</span>;</span><br><span class="line">  <span class="keyword">const</span> metersPerUnit = projection.<span class="title function_">getMetersPerUnit</span>();</span><br><span class="line">  <span class="keyword">const</span> visibleMeters = <span class="number">2</span> * distance * <span class="title class_">Math</span>.<span class="title function_">tan</span>(fovy / <span class="number">2</span>);</span><br><span class="line">  <span class="keyword">const</span> relativeCircumference = <span class="title class_">Math</span>.<span class="title function_">cos</span>(<span class="title class_">Math</span>.<span class="title function_">abs</span>(latitude));</span><br><span class="line">  <span class="keyword">const</span> visibleMapUnits = visibleMeters / metersPerUnit / relativeCircumference;</span><br><span class="line">  <span class="keyword">const</span> resolution = visibleMapUnits / canvas.<span class="property">clientHeight</span>;</span><br><span class="line">  <span class="keyword">return</span> resolution;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://github.com/openlayers/ol-cesium/blob/568a2b0de9cb01c1010cc5ca2bf9e4c3f720073f/src/olcs/Camera.js">ol-cesium视角同步核心代码</a></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p><a href="https://kaifeiji.cc/demos/ol-cesium.html">ol-cesium视角同步示例代码</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>kaifeiji
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://kaifeiji.cc/post/ol-cesium/" title="OpenLayers与Cesium视角同步（基于分辨率和视野中心）">http://kaifeiji.cc/post/ol-cesium/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Cesium/" rel="tag"># Cesium</a>
+              <a href="/tags/OpenLayers/" rel="tag"># OpenLayers</a>
+              <a href="/tags/%E5%90%8C%E6%AD%A5/" rel="tag"># 同步</a>
+              <a href="/tags/%E5%88%86%E8%BE%A8%E7%8E%87/" rel="tag"># 分辨率</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/post/playground-2/" rel="prev" title="iOS微信聊天记录备份小工具（Windows/MacOS）">
+      <i class="fa fa-chevron-left"></i> iOS微信聊天记录备份小工具（Windows/MacOS）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/post/partial-copy-with-directory-structure/" rel="next" title="如何复制一部分文件，同时创建原来路径的文件夹结构？">
+      如何复制一部分文件，同时创建原来路径的文件夹结构？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AE%B2%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">代码讲解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">2.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br /></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">159</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2008 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="far fa-paper-plane"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/anime.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/utils.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/schemes/muse.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'cnHIUDuungOEXCPMd9tftQEA-gzGzoHsz',
+      appKey     : 'otCrgvn3d5la1Og0MRYOFefs',
+      placeholder: "评论",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

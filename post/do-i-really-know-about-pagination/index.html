@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="用户反馈，列表翻页，越往后越慢，到最后要20多秒才出来。看了看表，数量千万级，分页排序字段有索引，不应该啊。 测试、查资料，一通折腾，最终解决了问题，总结一番，形成此文。 本文探讨的仅限PostgreSQL数据库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我真的会分页吗">
+<meta property="og:url" content="http://kaifeiji.cc/post/do-i-really-know-about-pagination/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="用户反馈，列表翻页，越往后越慢，到最后要20多秒才出来。看了看表，数量千万级，分页排序字段有索引，不应该啊。 测试、查资料，一通折腾，最终解决了问题，总结一番，形成此文。 本文探讨的仅限PostgreSQL数据库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-11T06:16:59.000Z">
+<meta property="article:modified_time" content="2022-03-14T04:36:40.000Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="postgreSQL">
+<meta property="article:tag" content="分页">
+<meta property="article:tag" content="pagination">
+<meta property="article:tag" content="LIMIT">
+<meta property="article:tag" content="OFFSET">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://kaifeiji.cc/post/do-i-really-know-about-pagination/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>我真的会分页吗 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/post/do-i-really-know-about-pagination/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br />">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我真的会分页吗
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-11 14:16:59" itemprop="dateCreated datePublished" datetime="2022-03-11T14:16:59+08:00">2022-03-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/post/do-i-really-know-about-pagination/" class="post-meta-item leancloud_visitors" data-flag-title="我真的会分页吗" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/post/do-i-really-know-about-pagination/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/post/do-i-really-know-about-pagination/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>用户反馈，列表翻页，越往后越慢，到最后要20多秒才出来。看了看表，数量千万级，分页排序字段有索引，不应该啊。</p>
+<p>测试、查资料，一通折腾，最终解决了问题，总结一番，形成此文。</p>
+<p>本文探讨的仅限PostgreSQL数据库。</p>
+<span id="more"></span>
+
+<h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>之前一直把<code>LIMIT OFFSET</code>当作分页的默认选项，当作数据库的基础设施。</p>
+<p>客户反馈，翻页一页20多秒，我的信仰崩塌了。</p>
+<p>谷歌、Stackworkflow、知乎一顿整。</p>
+<h2 id="LIMIT-OFFSET-分页原理"><a href="#LIMIT-OFFSET-分页原理" class="headerlink" title="LIMIT OFFSET 分页原理"></a>LIMIT OFFSET 分页原理</h2><p>一个学校的毕业典礼：1000个学生，分成一批次10个，共100批次上台领毕业证。</p>
+<p>校长说：请按学号排序，第98批次上台领奖。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> students <span class="keyword">ORDER</span> <span class="keyword">BY</span> id LIMIT <span class="number">10</span> <span class="keyword">OFFSET</span> (<span class="number">98</span> <span class="operator">-</span> <span class="number">1</span>) <span class="operator">*</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>学生按学号乱哄哄<strong>排序</strong>（<code>order by</code>）</li>
+<li><strong>第一次数人头</strong>（<code>OFFSET</code>）：导员从第1个人，数到第970个人</li>
+<li><strong>第二次数人头</strong>（<code>LIMIT</code>）：第971个到第980个学生上台</li>
+</ol>
+<p>抛开全表、扫描、索引、并行等专业词汇，<code>LIMIT OFFSET</code>就是这样做的分页。</p>
+<p>从日常生活经验出发，这件事儿的瓶颈在排序和第一次数人头。</p>
+<h3 id="排序（ORDER-BY）"><a href="#排序（ORDER-BY）" class="headerlink" title="排序（ORDER BY）"></a>排序（ORDER BY）</h3><p>一般分页的排序字段和正序倒序是确定的，那么排序的耗时应该也是不变的。</p>
+<p>给排序字段加上索引，是一个非常好的实践，索引能大大减少排序耗时。</p>
+<p>当然，不加<code>ORDER BY</code>排序，一样能分页，不过就是数据库引擎内部排序，一般是按存储顺序读取。</p>
+<h3 id="数人头（LIMIT-OFFSET）"><a href="#数人头（LIMIT-OFFSET）" class="headerlink" title="数人头（LIMIT OFFSET）"></a>数人头（LIMIT OFFSET）</h3><p>分页的目的就是不让一页有太多数据，所以第二次数人头（<code>LIMIT</code>）数量不会太大，因此也不会耗时太久。</p>
+<p>问题在于第一次数人头（<code>OFFSET</code>），要找到指定批次的学生，是要一个一个数过去的。</p>
+<p>随着批次越大，要数的人头也越来越多，也就越来越慢。</p>
+<h2 id="如何实现更快的分页"><a href="#如何实现更快的分页" class="headerlink" title="如何实现更快的分页"></a>如何实现更快的分页</h2><p>经过查阅资料案例，总结如下：</p>
+<h3 id="基于键（Keyset）-x2F-无限滚动（Infinite-Scroll）"><a href="#基于键（Keyset）-x2F-无限滚动（Infinite-Scroll）" class="headerlink" title="基于键（Keyset）&#x2F;无限滚动（Infinite Scroll）"></a>基于键（Keyset）&#x2F;无限滚动（Infinite Scroll）</h3><p>获取第一页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> students <span class="keyword">ORDER</span> <span class="keyword">BY</span> id LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>记录第一页最后一个的id，翻页&#x2F;向下滚动时，前一页最后一个的id作为参数传入第二页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> students <span class="keyword">WHERE</span> id <span class="operator">&gt;</span> ? LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点</strong>：</p>
+<p>1、规避了OFFSET耗时的线性增长</p>
+<p><strong>缺点</strong>：</p>
+<p>2、无法直接跳转到指定的页码</p>
+<p><strong>评价</strong>：</p>
+<p>数据量较大时，分页的常规操作，除了id，更常见的是按时间排序。</p>
+<h3 id="基于事务ID（xmin）"><a href="#基于事务ID（xmin）" class="headerlink" title="基于事务ID（xmin）"></a>基于事务ID（xmin）</h3><p><code>xmin</code>是PostgreSQL的内置字段，代表的是事务ID。一次INSERT&#x2F;UPDATE即为一次事务。</p>
+<p>获取第一页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> xmin::text::<span class="type">int</span> <span class="keyword">as</span> xmin, <span class="operator">*</span> <span class="keyword">FROM</span> students <span class="keyword">ORDER</span> <span class="keyword">BY</span> xmin::text::<span class="type">int</span> LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>记录第一页最后一个的xmin，翻页&#x2F;向下滚动时，前一页最后一个的xmin作为参数传入第二页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> students <span class="keyword">WHERE</span> xmin::text::<span class="type">int</span> <span class="operator">&gt;</span> ? LIMIT <span class="number">10</span> <span class="keyword">offset</span> <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点</strong>：</p>
+<p>1、规避了OFFSET耗时的线性增长</p>
+<p>2、内置字段无需额外建立和维护索引</p>
+<p><strong>缺点</strong>：</p>
+<p>1、无法直接跳转到指定的页码</p>
+<p>2、可能会出现数据缺失</p>
+<p><strong>评价</strong>：</p>
+<p>按事务ID排序分页，实际是按时间排序，因为事务ID是递增的。</p>
+<p>如果存在一次事务INSERT&#x2F;UPDATE多条数据，例如一次事务更新了20条数据，每页10条，翻到第二页的时候，后10条就被遗漏了。</p>
+<p>所以这种排序，只适合没有批量插入更新事务的业务表。</p>
+<h3 id="基于存储位置（ctid）"><a href="#基于存储位置（ctid）" class="headerlink" title="基于存储位置（ctid）"></a>基于存储位置（ctid）</h3><p><code>ctid</code>是PostgreSQL另一个内置字段，代表的是一条数据所存储的位置。一次INSERT&#x2F;UPDATE即为一次事务。</p>
+<p>获取第p页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> ctid <span class="operator">=</span> <span class="keyword">ANY</span> (<span class="keyword">ARRAY</span></span><br><span class="line">  (<span class="keyword">SELECT</span> (<span class="string">&#x27;(&#x27;</span> <span class="operator">||</span> p <span class="operator">||</span> <span class="string">&#x27;,&#x27;</span> <span class="operator">||</span> s.n <span class="operator">||</span> <span class="string">&#x27;)&#x27;</span>)::tid</span><br><span class="line">     <span class="keyword">FROM</span> generate_series(<span class="number">0</span>,current_setting(<span class="string">&#x27;block_size&#x27;</span>)::<span class="type">int</span> <span class="operator">/</span> <span class="number">4</span>) <span class="keyword">AS</span> s(n)</span><br><span class="line">  )</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点</strong>：</p>
+<p>1、规避了OFFSET耗时的线性增长</p>
+<p>2、内置字段无需额外建立和维护索引</p>
+<p>3、能够跳转到指定的页码</p>
+<p>4、按存储位置读取，速度比较快</p>
+<p><strong>缺点</strong>：</p>
+<p>1、但每页的数量不确定</p>
+<p>2、如果进行过DELETE操作，且没有VACCUM，有的页码可能没有记录</p>
+<p>3、存储排序没有任何业务上的意义</p>
+<p>4、不支持WHERE过滤条件</p>
+<p><strong>评价</strong>：</p>
+<p>经常更新的表，不定时VACCUM，分页会有“空洞”。</p>
+<p>所以适合数据量大、不常更新的表，且没有过滤需求（WHERE）。</p>
+<p>按存储读取，相对会快一些。</p>
+<h3 id="基于表统计数据（pg-stats）"><a href="#基于表统计数据（pg-stats）" class="headerlink" title="基于表统计数据（pg_stats）"></a>基于表统计数据（pg_stats）</h3><p>根据数据表的统计数据，可以</p>
+<p>获取第p页：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">WITH</span> bucket <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span> (histogram_bounds::text::<span class="type">int</span>[])[<span class="number">10</span> <span class="operator">*</span> p <span class="operator">/</span> <span class="number">1000</span> <span class="operator">+</span> <span class="number">1</span>] <span class="keyword">AS</span> lower_bound,</span><br><span class="line">           (histogram_bounds::text::<span class="type">int</span>[])[<span class="number">10</span> <span class="operator">*</span> p <span class="operator">/</span> <span class="number">1000</span> <span class="operator">+</span> <span class="number">2</span>] <span class="keyword">AS</span> upper_bound</span><br><span class="line">    <span class="keyword">FROM</span> pg_stats</span><br><span class="line">    <span class="keyword">WHERE</span> tablename <span class="operator">=</span> <span class="string">&#x27;students&#x27;</span></span><br><span class="line">    <span class="keyword">AND</span> attname <span class="operator">=</span> <span class="string">&#x27;id&#x27;</span></span><br><span class="line">    LIMIT <span class="number">1</span></span><br><span class="line">  )</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> users</span><br><span class="line"><span class="keyword">WHERE</span> id <span class="operator">&gt;=</span> (<span class="keyword">select</span> lower_bound <span class="keyword">from</span> bucket)</span><br><span class="line"><span class="keyword">AND</span> id <span class="operator">&lt;</span> (<span class="keyword">select</span> upper_bound <span class="keyword">from</span> bucket)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> id <span class="keyword">ASC</span></span><br><span class="line">LIMIT <span class="number">1</span></span><br><span class="line"><span class="keyword">OFFSET</span> (<span class="number">10</span> <span class="operator">*</span> p <span class="operator">%</span> b);</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点</strong>：</p>
+<p>1、规避了OFFSET耗时的线性增长</p>
+<p>2、可以指定排序的字段</p>
+<p>3、可以跳转到指定的页码</p>
+<p>4、按统计数据读取，速度比较快</p>
+<p><strong>缺点</strong>：</p>
+<p>1、统计数据不精确，第10页返回的结果并非第91-100条数据</p>
+<p>2、表频繁变动时，统计数据存在滞后性</p>
+<p>3、不支持WHERE过滤条件</p>
+<p><strong>评价</strong>：</p>
+<p>比<code>ctid</code>更好的一点，是能指定排序字段。</p>
+<p>但同样不支持过滤（WHERE），而且由于统计数据的特性，适合不常更新的表。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上几种分页的奇技淫巧，没有细讲原理，有兴趣的可以看看参考文献。</p>
+<p>大多数读者应该只想知道这个：</p>
+<table>
+<thead>
+<tr>
+<th>分页方法</th>
+<th>耗时</th>
+<th>业务排序</th>
+<th>业务过滤</th>
+<th>跳转指定页</th>
+<th>是否精确</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LIMIT-OFFSET</td>
+<td>线性增加</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Keyset</td>
+<td>一般</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+</tr>
+<tr>
+<td>xmin</td>
+<td>快</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+</tr>
+<tr>
+<td>ctid</td>
+<td>很快</td>
+<td>×</td>
+<td>×</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>pg_stats</td>
+<td>快</td>
+<td>√</td>
+<td>×</td>
+<td>√</td>
+<td>×</td>
+</tr>
+</tbody></table>
+<p>没有找到完美的分页方案。</p>
+<p>数据量小的时候，<code>LIMIT-OFFSET</code>是最佳选择。</p>
+<p>数据量大，不需要跳转指定页，一般选择<code>Keyset</code>。</p>
+<p>如果对于耗时有更高要求，可以根据需求选择其他非常规的分页。</p>
+<h2 id="P-S"><a href="#P-S" class="headerlink" title="P.S"></a>P.S</h2><p>最终，发现问题的根源是索引损坏，导致分页时排序太慢。</p>
+<p>修复索引后，耗时1秒以内——千万级的数据分页，LIMIT-OFFSET还是HOLD住的。</p>
+<p>也就是说，我前边整的活儿算是白折腾了。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>[1] <a target="_blank" rel="noopener" href="https://chrisdone.com/posts/postgresql-pagination/">Fast pagination on PostgreSQL</a></li>
+<li>[2] <a target="_blank" rel="noopener" href="https://leopard.in.ua/2014/10/11/postgresql-paginattion">Pagination Done the PostgreSQL Way</a></li>
+<li>[3] <a target="_blank" rel="noopener" href="https://dev.to/tariqabughofa/general-and-unconventional-pagination-techniques-postgres-24fh">General and Unconventional Pagination Techniques in Postgres</a></li>
+<li>[4] <a target="_blank" rel="noopener" href="https://www.citusdata.com/blog/2016/03/30/five-ways-to-paginate/">Five ways to paginate in Postgres, from the basic to the exotic</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>kaifeiji
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://kaifeiji.cc/post/do-i-really-know-about-pagination/" title="我真的会分页吗">http://kaifeiji.cc/post/do-i-really-know-about-pagination/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/postgreSQL/" rel="tag"># postgreSQL</a>
+              <a href="/tags/%E5%88%86%E9%A1%B5/" rel="tag"># 分页</a>
+              <a href="/tags/pagination/" rel="tag"># pagination</a>
+              <a href="/tags/LIMIT/" rel="tag"># LIMIT</a>
+              <a href="/tags/OFFSET/" rel="tag"># OFFSET</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/post/partial-copy-with-directory-structure/" rel="prev" title="如何复制一部分文件，同时创建原来路径的文件夹结构？">
+      <i class="fa fa-chevron-left"></i> 如何复制一部分文件，同时创建原来路径的文件夹结构？
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%98%E8%B5%B7"><span class="nav-number">1.</span> <span class="nav-text">缘起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIMIT-OFFSET-%E5%88%86%E9%A1%B5%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">LIMIT OFFSET 分页原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E5%BA%8F%EF%BC%88ORDER-BY%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">排序（ORDER BY）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E4%BA%BA%E5%A4%B4%EF%BC%88LIMIT-OFFSET%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">数人头（LIMIT OFFSET）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%9B%B4%E5%BF%AB%E7%9A%84%E5%88%86%E9%A1%B5"><span class="nav-number">3.</span> <span class="nav-text">如何实现更快的分页</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E9%94%AE%EF%BC%88Keyset%EF%BC%89-x2F-%E6%97%A0%E9%99%90%E6%BB%9A%E5%8A%A8%EF%BC%88Infinite-Scroll%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">基于键（Keyset）&#x2F;无限滚动（Infinite Scroll）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E4%BA%8B%E5%8A%A1ID%EF%BC%88xmin%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">基于事务ID（xmin）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE%EF%BC%88ctid%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">基于存储位置（ctid）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%A1%A8%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE%EF%BC%88pg-stats%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">基于表统计数据（pg_stats）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P-S"><span class="nav-number">5.</span> <span class="nav-text">P.S</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br /></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">159</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2008 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="far fa-paper-plane"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/anime.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/utils.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/schemes/muse.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'cnHIUDuungOEXCPMd9tftQEA-gzGzoHsz',
+      appKey     : 'otCrgvn3d5la1Og0MRYOFefs',
+      placeholder: "评论",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="之前用 2012 年的老旧笔记本 ThinkPad E530c，做了一个 Aria2 下载服务器。 时间长了发现这玩意耗电还是挺可观的，遂买了树莓派 4B，作为替代。 美其名曰节能减排，实际就是按捺不住骚动的内心，实在是想着折腾点啥吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派4B+Aria2搭建离线下载服务器">
+<meta property="og:url" content="http://kaifeiji.cc/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="之前用 2012 年的老旧笔记本 ThinkPad E530c，做了一个 Aria2 下载服务器。 时间长了发现这玩意耗电还是挺可观的，遂买了树莓派 4B，作为替代。 美其名曰节能减排，实际就是按捺不住骚动的内心，实在是想着折腾点啥吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1619180597689.png">
+<meta property="article:published_time" content="2021-04-13T12:41:35.000Z">
+<meta property="article:modified_time" content="2021-04-28T01:31:36.000Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="树莓派">
+<meta property="article:tag" content="Aria2">
+<meta property="article:tag" content="离线下载">
+<meta property="article:tag" content="远程下载">
+<meta property="article:tag" content="frp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaifeiji.cc/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg">
+
+<link rel="canonical" href="http://kaifeiji.cc/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>树莓派4B+Aria2搭建离线下载服务器 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br />">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          树莓派4B+Aria2搭建离线下载服务器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-13 20:41:35" itemprop="dateCreated datePublished" datetime="2021-04-13T20:41:35+08:00">2021-04-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%98%E8%85%BE/" itemprop="url" rel="index"><span itemprop="name">折腾</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/" class="post-meta-item leancloud_visitors" data-flag-title="树莓派4B+Aria2搭建离线下载服务器" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>之前用 2012 年的老旧笔记本 ThinkPad E530c，做了一个 Aria2 下载服务器。</p>
+<p>时间长了发现这玩意耗电还是挺可观的，遂买了树莓派 4B，作为替代。</p>
+<p>美其名曰节能减排，实际就是按捺不住骚动的内心，实在是想着折腾点啥吧。</p>
+<span id="more"></span>
+
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan.jpg" alt="树莓派"></p>
+<h1 id="购置"><a href="#购置" class="headerlink" title="购置"></a>购置</h1><p>本着能省则省，买了树莓派 4B 的 2G 版本，物品清单如下：</p>
+<ul>
+<li>树莓派 4B（2G，298 元）</li>
+<li>电源插头+电源线（媳妇碎屏华为的快充，0 元）</li>
+<li>TF 卡（旧摄像头拆的，32G，0 元）</li>
+<li>移动硬盘（旧笔记本拆的，1T，挂个硬盘盒，29 元）</li>
+<li>亚克力外壳+风扇（19 元）</li>
+<li>散热片（7 元）</li>
+<li>读卡器（8 元）</li>
+<li>Micro HDMI 转接头（9 元）</li>
+</ul>
+<p>总计：350 元整。没算错吧哈哈。</p>
+<h1 id="开箱"><a href="#开箱" class="headerlink" title="开箱"></a>开箱</h1><p>在公司收到快递，迫不及待的打开包装，上手盘了一会。</p>
+<p>散热片还是有必要的。一共五个，撕开胶贴，粘上即可。</p>
+<p>外壳+风扇，拧几个螺丝搞定。</p>
+<p>在公司还是不敢太嚣张，回家搞。</p>
+<h1 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h1><h2 id="烧录系统"><a href="#烧录系统" class="headerlink" title="烧录系统"></a>烧录系统</h2><p>１、下载安装 Raspberry Pi Imager（镜像烧录工具），或其他系统烧录工具。</p>
+<p><a target="_blank" rel="noopener" href="https://www.raspberrypi.org/software/">https://www.raspberrypi.org/software/</a></p>
+<p>２、下载系统镜像，烧录到 TF 卡上，以 Ubuntu Server 为例：</p>
+<p><a target="_blank" rel="noopener" href="https://cdimage.ubuntu.com/releases/20.04/release/">https://cdimage.ubuntu.com/releases/20.04/release/</a></p>
+<p>树莓派是 ARM 架构，切记一定要选择这个版本：</p>
+<p>“Raspberry Pi Generic (64-bit ARM) preinstalled server image”</p>
+<h2 id="配置-Wifi"><a href="#配置-Wifi" class="headerlink" title="配置 Wifi"></a>配置 Wifi</h2><p>如果直接插网线连接路由器，可以略过这一步。</p>
+<p>无线 Wifi 需要一些配置，在 TF 卡的“system-boot”分区，修改配置文件“network-config”。</p>
+<p>配置文件中可能已经有一些配置项，只不过用井号#注释掉了，可以去掉注释，修改 SSID 和密码。</p>
+<p>如下，千万注意缩进，四个空格为一个缩进。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">wifis:</span></span><br><span class="line">    <span class="attr">wlan0:</span></span><br><span class="line">    <span class="attr">dhcp4:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">optional:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">access-points:</span></span><br><span class="line">    <span class="string">&quot;你的无线SSID&quot;</span><span class="string">:</span></span><br><span class="line">        <span class="attr">password:</span> <span class="string">&quot;你的无线密码&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="开机"><a href="#开机" class="headerlink" title="开机"></a>开机</h2><p>TF 卡插入树莓派，接入键盘、Micro HDMI 连显示器，插上电源即启动。</p>
+<p>正常情况首次启动会慢一些，启动完成后，输入默认的用户名密码：ubuntu&#x2F;ubuntu，登录。</p>
+<p>首次登录会提示修改初始密码，改完记录好。</p>
+<h2 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h2><p>现在树莓派还连在显示器上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig -a</span><br></pre></td></tr></table></figure>
+
+<p>查找其中类似于 192.168.1.*或 192.168.0.*的 IP。</p>
+<p>当然也可以通过家中的路由器控制界面，来查看 IP。</p>
+<p>知道它的 IP，就可以甩开键盘、显示器，自由奔放的 SSH 了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh ubuntu@192.168.1.110</span><br></pre></td></tr></table></figure>
+
+<h1 id="Aria2"><a href="#Aria2" class="headerlink" title="Aria2"></a>Aria2</h1><h2 id="frp"><a href="#frp" class="headerlink" title="frp"></a>frp</h2><p>为了能让 Aria2 在外网访问实现远程下载，这里采用了 frp 端口映射到 VPS 的方式（如果你家里宽带有独立 IP 那更好）。</p>
+<p>从以下地址，下载 frp 程序：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a></p>
+<p>树莓派 4B 是 arm64 架构，所以需要分别下载 2 个：</p>
+<p>frp_0.36.2_linux_arm64.tar.gz</p>
+<p>frp_0.36.2_linux_amd64.tar.gz</p>
+<h3 id="frps"><a href="#frps" class="headerlink" title="frps"></a>frps</h3><p>将 frp_0.36.2_linux_amd64.tar.gz 部署到 VPS 的&#x2F;usr&#x2F;local&#x2F;frps&#x2F;文件夹。</p>
+<p>编辑 frps 配置文件如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">nano /usr/local/frps/frps.ini</span><br><span class="line"></span><br><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">bind_addr</span> = <span class="number">0.0</span>.<span class="number">0.0</span></span><br><span class="line"><span class="attr">bind_port</span> = <span class="number">5443</span></span><br><span class="line"><span class="attr">kcp_bind_port</span> = <span class="number">5443</span></span><br><span class="line"><span class="attr">dashboard_port</span> = <span class="number">6443</span></span><br><span class="line"><span class="attr">dashboard_user</span> = admin</span><br><span class="line"><span class="attr">dashboard_pwd</span> = frps_1024</span><br><span class="line"><span class="attr">vhost_http_port</span> = <span class="number">8080</span></span><br><span class="line"><span class="attr">vhost_https_port</span> = <span class="number">8443</span></span><br><span class="line"><span class="attr">log_file</span> = /usr/local/frps/frps.log</span><br><span class="line"><span class="attr">log_level</span> = info</span><br><span class="line"><span class="attr">log_max_days</span> = <span class="number">3</span></span><br><span class="line"><span class="attr">token</span> = frps的token随后要用</span><br><span class="line"><span class="attr">max_pool_count</span> = <span class="number">50</span></span><br><span class="line"><span class="attr">tcp_mux</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑 frps 服务文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano /etc/init.d/frps</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/bash</span></span><br><span class="line"></span><br><span class="line">PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin</span><br><span class="line">ProgramName=<span class="string">&quot;Frps&quot;</span></span><br><span class="line">ProgramPath=<span class="string">&quot;/usr/local/frps&quot;</span></span><br><span class="line">NAME=frps</span><br><span class="line">BIN=<span class="variable">$&#123;ProgramPath&#125;</span>/<span class="variable">$&#123;NAME&#125;</span></span><br><span class="line">CONFIGFILE=<span class="variable">$&#123;ProgramPath&#125;</span>/frps.ini</span><br><span class="line">SCRIPTNAME=/etc/init.d/<span class="variable">$&#123;NAME&#125;</span></span><br><span class="line">version=<span class="string">&quot;1.1&quot;</span></span><br><span class="line">program_version=`<span class="variable">$&#123;BIN&#125;</span> --version`</span><br><span class="line">RET_VAL=0</span><br><span class="line"></span><br><span class="line">[ -x <span class="variable">$&#123;BIN&#125;</span> ] || <span class="built_in">exit</span> 0</span><br><span class="line">strLog=<span class="string">&quot;&quot;</span></span><br><span class="line"><span class="function"><span class="title">fun_clangcn</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;+--------------------------------------------------+&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;|        Manager for <span class="variable">$&#123;ProgramName&#125;</span>, Written by Clang        |&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;+--------------------------------------------------+&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;| Intro: http://koolshare.cn/thread-65379-1-1.html |&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;+--------------------------------------------------+&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">fun_check_run</span></span>()&#123;</span><br><span class="line">    PID=`ps -ef | grep -v grep | grep -i <span class="string">&quot;<span class="variable">$&#123;BIN&#125;</span>&quot;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span><br><span class="line">    <span class="keyword">if</span> [ ! -z <span class="variable">$PID</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">return</span> 0</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_load_config</span></span>()&#123;</span><br><span class="line">    <span class="keyword">if</span> [ ! -r <span class="variable">$&#123;CONFIGFILE&#125;</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;config file <span class="variable">$&#123;CONFIGFILE&#125;</span> not found&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_start</span></span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$&#123;arg1&#125;</span>&quot;</span> = <span class="string">&quot;start&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">      fun_clangcn</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> fun_check_run; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> (pid <span class="variable">$PID</span>) already running.&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    fun_load_config</span><br><span class="line">    <span class="built_in">echo</span> -n <span class="string">&quot;Starting <span class="variable">$&#123;ProgramName&#125;</span>(<span class="variable">$&#123;program_version&#125;</span>)...&quot;</span></span><br><span class="line">    <span class="variable">$&#123;BIN&#125;</span> -c <span class="variable">$&#123;CONFIGFILE&#125;</span> &gt;/dev/null 2&gt;&amp;1 &amp;</span><br><span class="line">    <span class="built_in">sleep</span> 1</span><br><span class="line">    <span class="keyword">if</span> ! fun_check_run; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;start failed&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot; done&quot;</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> (pid <span class="variable">$PID</span>)is running.&quot;</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">fun_stop</span></span>()&#123;</span><br><span class="line">    <span class="keyword">if</span> [ <span class="string">&quot;<span class="variable">$&#123;arg1&#125;</span>&quot;</span> = <span class="string">&quot;stop&quot;</span> ] || [ <span class="string">&quot;<span class="variable">$&#123;arg1&#125;</span>&quot;</span> = <span class="string">&quot;restart&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">      fun_clangcn</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">if</span> fun_check_run; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> -n <span class="string">&quot;Stoping <span class="variable">$&#123;ProgramName&#125;</span> (pid <span class="variable">$PID</span>)... &quot;</span></span><br><span class="line">        <span class="built_in">kill</span> <span class="variable">$PID</span></span><br><span class="line">        <span class="keyword">if</span> [ <span class="string">&quot;$?&quot;</span> != 0 ] ; <span class="keyword">then</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot; failed&quot;</span></span><br><span class="line">            <span class="built_in">return</span> 1</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">echo</span> <span class="string">&quot; done&quot;</span></span><br><span class="line">        <span class="keyword">fi</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> is not running.&quot;</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_restart</span></span>()&#123;</span><br><span class="line">    fun_stop</span><br><span class="line">    fun_start</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_status</span></span>()&#123;</span><br><span class="line">    PID=`ps -ef | grep -v grep | grep -i <span class="string">&quot;<span class="variable">$&#123;BIN&#125;</span>&quot;</span> | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span>`</span><br><span class="line">    <span class="keyword">if</span> [ ! -z <span class="variable">$PID</span> ]; <span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> (pid <span class="variable">$PID</span>) is running...&quot;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> is stopped&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 0</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">checkos</span></span>()&#123;</span><br><span class="line">    <span class="keyword">if</span> grep -Eqi <span class="string">&quot;CentOS&quot;</span> /etc/issue || grep -Eq <span class="string">&quot;CentOS&quot;</span> /etc/*-release; <span class="keyword">then</span></span><br><span class="line">        OS=CentOS</span><br><span class="line">    <span class="keyword">elif</span> grep -Eqi <span class="string">&quot;Debian&quot;</span> /etc/issue || grep -Eq <span class="string">&quot;Debian&quot;</span> /etc/*-release; <span class="keyword">then</span></span><br><span class="line">        OS=Debian</span><br><span class="line">    <span class="keyword">elif</span> grep -Eqi <span class="string">&quot;Ubuntu&quot;</span> /etc/issue || grep -Eq <span class="string">&quot;Ubuntu&quot;</span> /etc/*-release; <span class="keyword">then</span></span><br><span class="line">        OS=Ubuntu</span><br><span class="line">    <span class="keyword">elif</span> grep -Eqi <span class="string">&quot;Alpine&quot;</span> /etc/issue || grep -Eq <span class="string">&quot;Alpine&quot;</span> /etc/*-release; <span class="keyword">then</span></span><br><span class="line">        OS=Alpine</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Not support OS, Please reinstall OS and retry!&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_config</span></span>()&#123;</span><br><span class="line">    <span class="keyword">if</span> [ -s <span class="variable">$&#123;CONFIGFILE&#125;</span> ]; <span class="keyword">then</span></span><br><span class="line">        vi <span class="variable">$&#123;CONFIGFILE&#125;</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> configuration file not found!&quot;</span></span><br><span class="line">        <span class="built_in">return</span> 1</span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_version</span></span>()&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;ProgramName&#125;</span> version <span class="variable">$&#123;program_version&#125;</span>&quot;</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="title">fun_help</span></span>()&#123;</span><br><span class="line">    <span class="variable">$&#123;BIN&#125;</span> --<span class="built_in">help</span></span><br><span class="line">    <span class="built_in">return</span> 0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">arg1=<span class="variable">$1</span></span><br><span class="line">[  -z <span class="variable">$&#123;arg1&#125;</span> ]</span><br><span class="line"><span class="keyword">case</span> <span class="string">&quot;<span class="variable">$&#123;arg1&#125;</span>&quot;</span> <span class="keyword">in</span></span><br><span class="line">    start|stop|restart|status|config)</span><br><span class="line">        fun_<span class="variable">$&#123;arg1&#125;</span></span><br><span class="line">    ;;</span><br><span class="line">    [vV][eE][rR][sS][iI][oO][nN]|-[vV][eE][rR][sS][iI][oO][nN]|--[vV][eE][rR][sS][iI][oO][nN]|-[vV]|--[vV])</span><br><span class="line">        fun_version</span><br><span class="line">    ;;</span><br><span class="line">    [Cc]|[Cc][Oo][Nn][Ff]|[Cc][Oo][Nn][Ff][Ii][Gg]|-[Cc]|-[Cc][Oo][Nn][Ff]|-[Cc][Oo][Nn][Ff][Ii][Gg]|--[Cc]|--[Cc][Oo][Nn][Ff]|--[Cc][Oo][Nn][Ff][Ii][Gg])</span><br><span class="line">        fun_config</span><br><span class="line">    ;;</span><br><span class="line">    [Hh]|[Hh][Ee][Ll][Pp]|-[Hh]|-[Hh][Ee][Ll][Pp]|--[Hh]|--[Hh][Ee][Ll][Pp])</span><br><span class="line">        fun_help</span><br><span class="line">    ;;</span><br><span class="line">    *)</span><br><span class="line">        fun_clangcn</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Usage: <span class="variable">$SCRIPTNAME</span> &#123;start|stop|restart|status|config|version&#125;&quot;</span></span><br><span class="line">        RET_VAL=1</span><br><span class="line">    ;;</span><br><span class="line"><span class="keyword">esac</span></span><br><span class="line"><span class="built_in">exit</span> <span class="variable">$RET_VAL</span></span><br></pre></td></tr></table></figure>
+
+<p>最后刷新一下服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl start frps</span><br><span class="line">systemctl status frps</span><br></pre></td></tr></table></figure>
+
+<h3 id="frpc"><a href="#frpc" class="headerlink" title="frpc"></a>frpc</h3><p>将 frp_0.36.2_linux_arm64.tar.gz 部署到树莓派的&#x2F;usr&#x2F;local&#x2F;frpc&#x2F;文件夹。</p>
+<p>编辑 frpc 配置文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano /usr/local/frpc/frpc.ini</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[common]</span></span><br><span class="line"><span class="attr">server_addr</span> = VPS的IP地址</span><br><span class="line"><span class="attr">server_port</span> = <span class="number">5443</span></span><br><span class="line"><span class="attr">authentication_method</span> = token</span><br><span class="line"><span class="attr">token</span> = VPS上frps的token</span><br><span class="line"></span><br><span class="line"><span class="section">[aria2]</span></span><br><span class="line"><span class="attr">type</span> = tcp</span><br><span class="line"><span class="attr">local_ip</span>=<span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line"><span class="attr">local_port</span> = <span class="number">6800</span></span><br><span class="line"><span class="attr">remote_port</span> = <span class="number">8600</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑 frpc 服务文件如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="attr">Description</span>=FRP Client Daemon</span><br><span class="line"><span class="attr">After</span>=network.target</span><br><span class="line"><span class="attr">Wants</span>=network.target</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span>=simple</span><br><span class="line"><span class="attr">ExecStart</span>=/usr/local/frpc/frpc -c /usr/local/frpc/frpc.ini</span><br><span class="line"><span class="attr">Restart</span>=always</span><br><span class="line"><span class="attr">RestartSec</span>=<span class="number">20</span>s</span><br><span class="line"><span class="attr">LimitNOFILE</span>=infinity</span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span>=multi-user.target</span><br></pre></td></tr></table></figure>
+
+<p>最后刷新一下服务，启动服务，查看服务状态是否正常</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl start frpc</span><br><span class="line">systemctl status frpc</span><br></pre></td></tr></table></figure>
+
+<h2 id="部署-aria2"><a href="#部署-aria2" class="headerlink" title="部署 aria2"></a>部署 aria2</h2><p>强烈推荐使用 P3TERX 的 aria2.sh 脚本来安装 aria2，非常简单：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/P3TERX/aria2.sh">https://github.com/P3TERX/aria2.sh</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">apt install wget curl ca-certificates</span><br><span class="line">wget -N git.io/aria2.sh &amp;&amp; <span class="built_in">chmod</span> +x aria2.sh</span><br><span class="line">./aria2.sh</span><br></pre></td></tr></table></figure>
+
+<p>后续步骤按提示操作即可，最后成功了，会有如下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Aria2 简单配置信息：</span><br><span class="line"></span><br><span class="line"> IPv4 地址      : 123.123.123.123</span><br><span class="line"> IPv6 地址      : IPv6 地址检测失败</span><br><span class="line"> RPC 端口       : 6800</span><br><span class="line"> RPC 密钥       : Aria2_1024</span><br><span class="line"> 下载目录       : /share/downloads</span><br><span class="line"> AriaNg 链接    : http://ariang.js.org/#!/settings/rpc/set/ws/123.123.123.123/6800/jsonrpc/token</span><br></pre></td></tr></table></figure>
+
+<p>将最后一行地址中的“123.123.123.123”换成 VPS 的 IP 地址，即可远程访问 Aria2。</p>
+<p><img src="https://kaifeiji.cc/post-images/1619180597689.png" alt="Aria2"></p>
+<p>网络链路如下：</p>
+<p>浏览器 -&gt; ariang.js.org 提供的 AriaNg 前端 -&gt; VPS 的 frps 转发 -&gt; 树莓派的 frpc 接收 -&gt; aria2 程序交互</p>
+<h2 id="部署-AriaNg"><a href="#部署-AriaNg" class="headerlink" title="部署 AriaNg"></a>部署 AriaNg</h2><p>也可以不用 ariang.js.org 的前端，自己部署一个 AriaNg。</p>
+<p>从 Github 下载 AriaNg（AllInOne 是单个 html 文件），部署到 VPS 的 Nginx 或 Apache 即可：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mayswind/AriaNg/releases">https://github.com/mayswind/AriaNg/releases</a></p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>kaifeiji
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://kaifeiji.cc/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/" title="树莓派4B+Aria2搭建离线下载服务器">http://kaifeiji.cc/post/shu-mei-pai-4b-zhen-shi-shi-yong-ti-yan/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" rel="tag"># 树莓派</a>
+              <a href="/tags/Aria2/" rel="tag"># Aria2</a>
+              <a href="/tags/%E7%A6%BB%E7%BA%BF%E4%B8%8B%E8%BD%BD/" rel="tag"># 离线下载</a>
+              <a href="/tags/%E8%BF%9C%E7%A8%8B%E4%B8%8B%E8%BD%BD/" rel="tag"># 远程下载</a>
+              <a href="/tags/frp/" rel="tag"># frp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/post/li-yong-opencv-guo-lu-jian-kong-shi-pin-ding-qi-shan-chu-jing-tai-shi-pin/" rel="prev" title="利用OpenCV过滤监控视频，定期删除静态视频">
+      <i class="fa fa-chevron-left"></i> 利用OpenCV过滤监控视频，定期删除静态视频
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/post/nei-wang-da-jian-npm-si-fu-verdaccio/" rel="next" title="内网搭建npm私服——Verdaccio">
+      内网搭建npm私服——Verdaccio <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%AD%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">购置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E7%AE%B1"><span class="nav-number">2.</span> <span class="nav-text">开箱</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">安装配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%83%A7%E5%BD%95%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.1.</span> <span class="nav-text">烧录系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Wifi"><span class="nav-number">3.2.</span> <span class="nav-text">配置 Wifi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA"><span class="nav-number">3.3.</span> <span class="nav-text">开机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH"><span class="nav-number">3.4.</span> <span class="nav-text">SSH</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aria2"><span class="nav-number">4.</span> <span class="nav-text">Aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frp"><span class="nav-number">4.1.</span> <span class="nav-text">frp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#frps"><span class="nav-number">4.1.1.</span> <span class="nav-text">frps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frpc"><span class="nav-number">4.1.2.</span> <span class="nav-text">frpc</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-aria2"><span class="nav-number">4.2.</span> <span class="nav-text">部署 aria2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2-AriaNg"><span class="nav-number">4.3.</span> <span class="nav-text">部署 AriaNg</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br /></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">159</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2008 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="far fa-paper-plane"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/anime.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/utils.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/schemes/muse.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'cnHIUDuungOEXCPMd9tftQEA-gzGzoHsz',
+      appKey     : 'otCrgvn3d5la1Og0MRYOFefs',
+      placeholder: "评论",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

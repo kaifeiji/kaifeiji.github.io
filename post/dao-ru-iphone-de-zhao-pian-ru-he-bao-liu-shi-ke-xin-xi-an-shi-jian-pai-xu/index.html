@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/favicon-16x16-next.png">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kaifeiji.cc","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。本文采用的是 ACDSee 和 Timeback，将要导入 iPhone 的照片四个日期改为一致的，就能保证导入的照片时间顺序啦。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="导入iPhone的照片如何保留时刻信息，按时间排序？">
+<meta property="og:url" content="http://kaifeiji.cc/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。本文采用的是 ACDSee 和 Timeback，将要导入 iPhone 的照片四个日期改为一致的，就能保证导入的照片时间顺序啦。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507503207.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507521760.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507540213.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507550459.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507570552.jpg">
+<meta property="og:image" content="http://kaifeiji.cc/post-images/1560507584983.jpg">
+<meta property="article:published_time" content="2018-05-31T09:21:58.000Z">
+<meta property="article:modified_time" content="2022-05-27T01:25:15.375Z">
+<meta property="article:author" content="kaifeiji">
+<meta property="article:tag" content="iPhone">
+<meta property="article:tag" content="照片">
+<meta property="article:tag" content="Exif">
+<meta property="article:tag" content="时刻">
+<meta property="article:tag" content="timeback">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://kaifeiji.cc/post-images/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu.jpg">
+
+<link rel="canonical" href="http://kaifeiji.cc/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>导入iPhone的照片如何保留时刻信息，按时间排序？ | 开飞机的老张</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">开飞机的老张</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://kaifeiji.cc/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji">
+      <meta itemprop="description" content="半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br />">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          导入iPhone的照片如何保留时刻信息，按时间排序？
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-05-31 17:21:58" itemprop="dateCreated datePublished" datetime="2018-05-31T17:21:58+08:00">2018-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%98%E8%85%BE/" itemprop="url" rel="index"><span itemprop="name">折腾</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/" class="post-meta-item leancloud_visitors" data-flag-title="导入iPhone的照片如何保留时刻信息，按时间排序？" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。本文采用的是 ACDSee 和 Timeback，将要导入 iPhone 的照片四个日期改为一致的，就能保证导入的照片时间顺序啦。</p>
+<span id="more"></span>
+
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu.jpg" alt="玩转exif"></p>
+<h1 id="整理照片"><a href="#整理照片" class="headerlink" title="整理照片"></a>整理照片</h1><p>我的主力手机是 128G 的 iPhone SE，平时收集的大量美女图、搞笑图，在手机里呈现无序状态，于是想在电脑上，把图按文件夹整理出来，再导入手机，以后斗图的时候岂不是美滋滋！</p>
+<p>导出再导入，一番操作后——悲剧了，在 iPhone 相册的“相簿”里，照片确实按文件夹分了组，但在“时刻”（貌似 iOS12 之后的改名叫“照片”了）里，时间全都变成了当天。</p>
+<h1 id="查找原因"><a href="#查找原因" class="headerlink" title="查找原因"></a>查找原因</h1><p>iPhone 管理照片功能强大，分为时间维度、空间维度，还有人物、自拍、全景等分类。</p>
+<p>在某些场景下，我们需要把照片导入到 iPhone 中：</p>
+<p>相机拍摄的照片；其他手机拍摄的照片；iPhone 拍摄的，导出到电脑，按照文件夹整理的照片……</p>
+<p>在这些场景下，直接用 iTunes 导入到 iPhone 的照片，其时间顺序往往是错误的，具体体现就是在时刻中，没有按拍摄时间分类，而是照片拷到电脑的日期。</p>
+<p>看了很多说法，但都进入一个误区：认为 iTunes 导入是按照拍摄日期导入的。</p>
+<p>经过研究，从外部导入到 iPhone 的照片，iTunes 是以 EXIF 日期、创建日期、修改日期、访问日期，四个日期中最晚的那个作为日期进行导入的。</p>
+<p>这个设定很变态，导致外部导入的照片显示当天的日期。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p><strong>机型：iPhone SE</strong></p>
+<p><strong>软件：iTunes、<a target="_blank" rel="noopener" href="http://www.bathome.net/thread-8242-2-1.html">TimeBack（批处理之家 xinje）</a>、ACDSee</strong></p>
+<h2 id="步骤-1："><a href="#步骤-1：" class="headerlink" title="步骤 1："></a>步骤 1：</h2><p>用 ACDSee 以列表形式查看需要导入的照片，下图可见，四个日期是完全一致的，这是更新成功后的结果，在更新前，我们要确定哪一个日期才是真正的拍摄日期（小概率会发生原始日期错误而创建日期正确的情况）。</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507503207.jpg" alt="拍摄日期"></p>
+<p>列表列出文件名、原始日期（即拍摄日期）、修改日期、创建日期、访问日期</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507521760.jpg" alt="列表"></p>
+<p>右键点击图片列表的表头，点击详细信息，可以设置 ACDSee 显示的列表项</p>
+<h2 id="步骤-2："><a href="#步骤-2：" class="headerlink" title="步骤 2："></a>步骤 2：</h2><p>在步骤 1 中，我们确定了一批图片的拍摄日期是正确的，在菜单中选择调整时间标签。</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507540213.jpg" alt="调整时间标签"></p>
+<p>选择调整时间标签（CTRL+T）</p>
+<p>在弹出的窗口选择“文件上次修改日期与时间”&#x2F;“文件创建日期与时间”，点击下一步。这两个日期分别进行依次批量操作，保证两个日期均与拍摄日期一致。</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507550459.jpg" alt="批量操作"></p>
+<p>修改日期和创建日期批量操作两次</p>
+<p>在下一步窗口中选择“使用不同的日期与时间”，选择“原始 Exif 日期&#x2F;时间”，点击调整时间标签，完成后，可以看到修改日期、创建日期与拍摄日期保持一致了。</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507570552.jpg" alt="原始Exif"></p>
+<p>根据情况灵活选择，哪个时间对就选哪个</p>
+<h2 id="步骤-3："><a href="#步骤-3：" class="headerlink" title="步骤 3："></a>步骤 3：</h2><p>下载 TimeBack.exe，复制到 C:\Windows\System32 文件夹下。</p>
+<p>在任意位置创建批处理文件 batchUpdate.bat，其中的路径更换成照片所在文件夹，双击执行。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@<span class="built_in">echo</span> off</span><br><span class="line">rem 假设要修改C:\test文件夹下所有的照片文件</span><br><span class="line"><span class="keyword">for</span> %%a <span class="keyword">in</span> (<span class="string">&quot;C:\test\*.*&quot;</span>) <span class="keyword">do</span> (</span><br><span class="line">    timeback /f <span class="string">&quot;%%a&quot;</span> /t <span class="string">&quot;%%~ta&quot;</span> <span class="literal">-v</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，即可看到第一张图中，四个日期保持一致。</p>
+<h2 id="步骤-4："><a href="#步骤-4：" class="headerlink" title="步骤 4："></a>步骤 4：</h2><p>在 iTunes 中，将所选文件夹同步到 iPhone 中，再看 iPhone 时刻。</p>
+<p>如果含有名为“iPod Photo Cache”的文件夹，需提前删除，这是之前同步的照片缓存，如不删除则导致日期仍未之前同步的照片日期。</p>
+<p><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/post-images/1560507584983.jpg" alt="导入照片"></p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p><strong>iTunes 导入 iPhone 的照片，取的是 EXIF 日期、创建日期、修改日期、访问日期中最晚的那个日期。</strong></p>
+<p>要导入 iPhone 的照片时间正确，就要把四个日期改成一样的。</p>
+<p>但是批处理文件获取不到拍摄日期，而 ACDSee 不能批量修改访问日期。</p>
+<p>因此结合两个软件，用 ACDSee 将拍摄日期更新到创建日期&#x2F;修改日期，用 TimeBack 把创建日期&#x2F;修改日期再更新到访问日期，这样达到目的。</p>
+<p>如果有小伙伴想到更简便的方法，请留言哦。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>kaifeiji
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://kaifeiji.cc/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/" title="导入iPhone的照片如何保留时刻信息，按时间排序？">http://kaifeiji.cc/post/dao-ru-iphone-de-zhao-pian-ru-he-bao-liu-shi-ke-xin-xi-an-shi-jian-pai-xu/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iPhone/" rel="tag"># iPhone</a>
+              <a href="/tags/%E7%85%A7%E7%89%87/" rel="tag"># 照片</a>
+              <a href="/tags/Exif/" rel="tag"># Exif</a>
+              <a href="/tags/%E6%97%B6%E5%88%BB/" rel="tag"># 时刻</a>
+              <a href="/tags/timeback/" rel="tag"># timeback</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/post/oracle-de-wen-jian-cao-zuo-util_file-bao-he-dbms_lob-bao/" rel="prev" title="Oracle的文件操作——UTIL_FILE包和DBMS_LOB包">
+      <i class="fa fa-chevron-left"></i> Oracle的文件操作——UTIL_FILE包和DBMS_LOB包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/post/oracle-fa-qi-http-qing-qiu-utl_http-bao/" rel="next" title="Oracle发起HTTP请求——UTL_HTTP包">
+      Oracle发起HTTP请求——UTL_HTTP包 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E7%90%86%E7%85%A7%E7%89%87"><span class="nav-number">1.</span> <span class="nav-text">整理照片</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text">查找原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4-1%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">步骤 1：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4-2%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">步骤 2：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4-3%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">步骤 3：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4-4%EF%BC%9A"><span class="nav-number">3.4.</span> <span class="nav-text">步骤 4：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">4.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji"
+      src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji</p>
+  <div class="site-description" itemprop="description">半路出家的程序员<br />前端、数据库、实施运维<br /><br />喜欢折腾各种好玩的<br /><br /></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">159</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="RSS → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 2008 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="far fa-paper-plane"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kaifeiji</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/lib/anime.min.js"></script>
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/utils.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/schemes/muse.js"></script>
+
+
+<script src="//cdn.jsdelivr.net/gh/kaifeiji/kaifeiji.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'cnHIUDuungOEXCPMd9tftQEA-gzGzoHsz',
+      appKey     : 'otCrgvn3d5la1Og0MRYOFefs',
+      placeholder: "评论",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
