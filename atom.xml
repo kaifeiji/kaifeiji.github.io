@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <author>
+    <name>kaifeiji.cc</name>
+  </author>
+  <generator uri="https://hexo.io/">Hexo</generator>
+  <icon>https://kaifeiji.cc/icon.png</icon>
+  <id>https://kaifeiji.cc/</id>
+  <link href="https://kaifeiji.cc/" rel="alternate"/>
+  <link href="https://kaifeiji.cc/atom.xml" rel="self"/>
+  <rights>All rights reserved 2026, kaifeiji.cc</rights>
+  <subtitle>写给未来的信</subtitle>
+  <title>开飞机的老张</title>
+  <updated>2026-03-03T07:15:17.837Z</updated>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="折腾" scheme="https://kaifeiji.cc/categories/%E6%8A%98%E8%85%BE/"/>
+    <category term="Openclaw" scheme="https://kaifeiji.cc/tags/Openclaw/"/>
+    <category term="树莓派" scheme="https://kaifeiji.cc/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
+    <id>https://kaifeiji.cc/post/openclaw-and-blog/</id>
+    <link href="https://kaifeiji.cc/post/openclaw-and-blog/"/>
+    <published>2026-03-03T06:29:43.000Z</published>
+    <summary>
+      <![CDATA[<p>最近在树莓派上折腾 OpenClaw 助手，顺便把博客也迁移过来了，记录一下完整过程。</p>]]>
+    </summary>
+    <title>Openclaw和博客</title>
+    <updated>2026-03-03T07:15:17.837Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="随笔" scheme="https://kaifeiji.cc/categories/%E9%9A%8F%E7%AC%94/"/>
+    <category term="万能青年旅店" scheme="https://kaifeiji.cc/tags/%E4%B8%87%E8%83%BD%E9%9D%92%E5%B9%B4%E6%97%85%E5%BA%97/"/>
+    <category term="冀西南林路行" scheme="https://kaifeiji.cc/tags/%E5%86%80%E8%A5%BF%E5%8D%97%E6%9E%97%E8%B7%AF%E8%A1%8C/"/>
+    <category term="音乐" scheme="https://kaifeiji.cc/tags/%E9%9F%B3%E4%B9%90/"/>
+    <id>https://kaifeiji.cc/post/drink-wine/</id>
+    <link href="https://kaifeiji.cc/post/drink-wine/"/>
+    <published>2024-08-10T17:57:22.000Z</published>
+    <summary>
+      <![CDATA[<p>《郊眠寺》是《冀西南林路行》的最后一章，这是这组诗中的最后一个声音，用平静的语调向我们吟唱。</p>
+<p>万青并没有给我们任何答案。</p>
+<p>或许在我们的时代，任何试图给出答案的人都是虚伪的。</p>
+<p>很好听，推荐。</p>]]>
+    </summary>
+    <title>郊眠寺</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="随笔" scheme="https://kaifeiji.cc/categories/%E9%9A%8F%E7%AC%94/"/>
+    <category term="万能青年旅店" scheme="https://kaifeiji.cc/tags/%E4%B8%87%E8%83%BD%E9%9D%92%E5%B9%B4%E6%97%85%E5%BA%97/"/>
+    <category term="音乐" scheme="https://kaifeiji.cc/tags/%E9%9F%B3%E4%B9%90/"/>
+    <id>https://kaifeiji.cc/post/mining/</id>
+    <link href="https://kaifeiji.cc/post/mining/"/>
+    <published>2024-06-18T16:43:32.000Z</published>
+    <summary>
+      <![CDATA[<blockquote>
+<p>此生再不归太行</p>
+</blockquote>]]>
+    </summary>
+    <title>采石</title>
+    <updated>2026-03-03T07:15:17.836Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="前端" scheme="https://kaifeiji.cc/categories/%E5%89%8D%E7%AB%AF/"/>
+    <category term="翻译" scheme="https://kaifeiji.cc/tags/%E7%BF%BB%E8%AF%91/"/>
+    <category term="Map" scheme="https://kaifeiji.cc/tags/Map/"/>
+    <category term="WeakMap" scheme="https://kaifeiji.cc/tags/WeakMap/"/>
+    <id>https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/</id>
+    <link href="https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/"/>
+    <published>2023-07-28T07:02:47.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://www.macarthur.me/posts/maps-for-dom-nodes">Why I Like Using Maps (and WeakMaps) for Handling DOM Nodes</a></p>
+<p>在处理大量DOM节点时，Map（和WeakMap）是非常实用的工具，本文分析了具体原因。</p>]]>
+    </summary>
+    <title>译：我为什么使用Map（和WeakMap）处理DOM节点</title>
+    <updated>2026-03-03T07:15:17.840Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Symbol" scheme="https://kaifeiji.cc/tags/Symbol/"/>
+    <id>https://kaifeiji.cc/post/an-introduction-to-symbols-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/an-introduction-to-symbols-in-javascript/"/>
+    <published>2023-07-27T08:59:15.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/symbol">An Introduction to Symbols in JavaScript</a></p>
+<p>Symbol提供了一种在对象中创建隐藏属性的方式。</p>]]>
+    </summary>
+    <title>介绍JavaScript中Symbol</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="URL" scheme="https://kaifeiji.cc/tags/URL/"/>
+    <id>https://kaifeiji.cc/post/get-query-string-values-in-vanilla-javascript/</id>
+    <link href="https://kaifeiji.cc/post/get-query-string-values-in-vanilla-javascript/"/>
+    <published>2023-07-27T08:47:58.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/query-string">Get Query String Values in Vanilla JavaScript</a></p>
+<p>本文展示了如何用原生JavaScript解析URL参数。</p>]]>
+    </summary>
+    <title>原生JavaScript获取URL参数</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="String" scheme="https://kaifeiji.cc/tags/String/"/>
+    <id>https://kaifeiji.cc/post/capitalize-the-first-letter-of-a-string-in-javascript-1/</id>
+    <link href="https://kaifeiji.cc/post/capitalize-the-first-letter-of-a-string-in-javascript-1/"/>
+    <published>2023-07-26T09:11:02.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/capitalize-first-letter">Capitalize the First Letter of a String in JavaScript</a></p>
+<p>不用任何外部库，实现字符串首字母大写。</p>]]>
+    </summary>
+    <title>字符串首字母大写</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Object" scheme="https://kaifeiji.cc/tags/Object/"/>
+    <category term="iterate" scheme="https://kaifeiji.cc/tags/iterate/"/>
+    <id>https://kaifeiji.cc/post/iterating-through-an-object-with-foreach/</id>
+    <link href="https://kaifeiji.cc/post/iterating-through-an-object-with-foreach/"/>
+    <published>2023-07-26T08:56:42.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/foreach-object">Iterating Through an Object with <code>forEach()</code></a></p>
+<p>通过Object.keys()、Object.values()和Object.entries()，可以用forEach遍历一个JavaScript对象。</p>]]>
+    </summary>
+    <title>用forEach()遍历对象</title>
+    <updated>2026-03-03T07:15:17.836Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="IIFE" scheme="https://kaifeiji.cc/tags/IIFE/"/>
+    <id>https://kaifeiji.cc/post/immediately-invoked-function-expressions-iife-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/immediately-invoked-function-expressions-iife-in-javascript/"/>
+    <published>2023-07-25T09:08:24.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/iife">Immediately Invoked Function Expressions (IIFE) in JavaScript</a></p>
+<p>JavaScript的立即调用函数表达式（IIFE）是一种常用于变量闭包的设计模式。</p>]]>
+    </summary>
+    <title>JavaScript的立即调用函数表达式（IIFE）</title>
+    <updated>2026-03-03T07:15:17.836Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Button" scheme="https://kaifeiji.cc/tags/Button/"/>
+    <category term="Disable" scheme="https://kaifeiji.cc/tags/Disable/"/>
+    <id>https://kaifeiji.cc/post/disable-a-button-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/disable-a-button-in-javascript/"/>
+    <published>2023-07-25T08:57:44.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/disable-button">Disable a Button in JavaScript</a></p>
+<p>如何用原生JavaScript禁用一个按钮。</p>]]>
+    </summary>
+    <title>JavaScript禁用按钮</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="FormData" scheme="https://kaifeiji.cc/tags/FormData/"/>
+    <id>https://kaifeiji.cc/post/formdata-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/formdata-in-javascript/"/>
+    <published>2023-07-25T08:48:54.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/formdata">FormData in JavaScript</a></p>
+<p><code>FormData</code>类在JavaScript上传文件时非常有用。</p>]]>
+    </summary>
+    <title>JavaScript的FormData</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Blob" scheme="https://kaifeiji.cc/tags/Blob/"/>
+    <id>https://kaifeiji.cc/post/blobs-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/blobs-in-javascript/"/>
+    <published>2023-07-25T08:37:41.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/blob">Blobs in JavaScript</a></p>
+<p>Blob（二进制大型对象）是JavaScript中一种类似于文件的数据结构，相当于客户端的Buffer。</p>]]>
+    </summary>
+    <title>JavaScript的Blob</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="File" scheme="https://kaifeiji.cc/tags/File/"/>
+    <id>https://kaifeiji.cc/post/read-local-files-in-javascript-with-filereader/</id>
+    <link href="https://kaifeiji.cc/post/read-local-files-in-javascript-with-filereader/"/>
+    <published>2023-07-25T07:44:22.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/filereader">Read Local Files in JavaScript with FileReader</a></p>
+<p>FileReader类可以从原生的文件input中读取文件。</p>]]>
+    </summary>
+    <title>用FileReader读取本地文件</title>
+    <updated>2026-03-03T07:15:17.838Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Promise" scheme="https://kaifeiji.cc/tags/Promise/"/>
+    <id>https://kaifeiji.cc/post/thenables-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/thenables-in-javascript/"/>
+    <published>2023-07-25T07:27:56.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/thenable">Thenables in JavaScript</a></p>
+<p>Thenable是一种行为类似于Promise的对象，主要用于链式操作和async&#x2F;await，但它并不是Promise。</p>]]>
+    </summary>
+    <title>JavaScript的Thenable</title>
+    <updated>2026-03-03T07:15:17.839Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Promise" scheme="https://kaifeiji.cc/tags/Promise/"/>
+    <id>https://kaifeiji.cc/post/reject-a-promise-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/reject-a-promise-in-javascript/"/>
+    <published>2023-07-25T07:02:43.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/promise-reject">Reject a Promise in JavaScript</a></p>
+<p>在Promise中出现了错误，可以用reject将其标记为rejected状态。</p>]]>
+    </summary>
+    <title>JavaScript中Promise的reject</title>
+    <updated>2026-03-03T07:15:17.838Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Promise" scheme="https://kaifeiji.cc/tags/Promise/"/>
+    <id>https://kaifeiji.cc/post/javascript-promise-chaining/</id>
+    <link href="https://kaifeiji.cc/post/javascript-promise-chaining/"/>
+    <published>2023-07-24T06:38:44.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/promise-chaining">JavaScript Promise Chaining</a></p>
+<p>Promise链式调用是一种很强大的模式，最大的好处是可以用一个<code>catch()</code>处理所有的错误。</p>]]>
+    </summary>
+    <title>JavaScript的Promise链</title>
+    <updated>2026-03-03T07:15:17.836Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="JavaScript" scheme="https://kaifeiji.cc/categories/JavaScript/"/>
+    <category term="drag" scheme="https://kaifeiji.cc/tags/drag/"/>
+    <category term="drop" scheme="https://kaifeiji.cc/tags/drop/"/>
+    <category term="resize" scheme="https://kaifeiji.cc/tags/resize/"/>
+    <category term="snap" scheme="https://kaifeiji.cc/tags/snap/"/>
+    <id>https://kaifeiji.cc/post/drag-and-drop-using-interact-js/</id>
+    <link href="https://kaifeiji.cc/post/drag-and-drop-using-interact-js/"/>
+    <published>2023-07-01T09:15:43.000Z</published>
+    <summary>
+      <![CDATA[<p>interact.js和大多数拖拽库相比有点不太一样：它提供了简单、灵活的API，对外暴露操作DOM元素所需的全部鼠标或触摸事件信息。但为了更自主的控制，**它不会对DOM元素进行任何操作！**你必须自己操作DOM，实现UI的响应——拖拽、绘制或者滚动页面等。</p>]]>
+    </summary>
+    <title>用interact.js实现拖拽、缩放、吸附</title>
+    <updated>2026-03-03T07:15:17.835Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="bluebird" scheme="https://kaifeiji.cc/tags/bluebird/"/>
+    <id>https://kaifeiji.cc/post/useing-bluebird-promises/</id>
+    <link href="https://kaifeiji.cc/post/useing-bluebird-promises/"/>
+    <published>2023-03-03T01:46:49.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/bluebird">Using Bluebird Promises</a></p>
+<p>blurbird是JavaScript一个流行的Promise库。</p>]]>
+    </summary>
+    <title>使用bluebird操作Promise</title>
+    <updated>2026-03-03T07:15:17.840Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="Promise" scheme="https://kaifeiji.cc/tags/Promise/"/>
+    <id>https://kaifeiji.cc/post/javascript-create-promise/</id>
+    <link href="https://kaifeiji.cc/post/javascript-create-promise/"/>
+    <published>2023-03-02T01:33:10.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/promise-create">JavaScript Create Promise</a></p>
+<p>本文简述JavaScript创建Promise的几种方式。</p>]]>
+    </summary>
+    <title>JavaScript创建Promise</title>
+    <updated>2026-03-03T07:15:17.836Z</updated>
+  </entry>
+  <entry>
+    <author>
+      <name>kaifeiji.cc</name>
+    </author>
+    <category term="Mastering JS" scheme="https://kaifeiji.cc/categories/Mastering-JS/"/>
+    <category term="catch" scheme="https://kaifeiji.cc/tags/catch/"/>
+    <id>https://kaifeiji.cc/post/the-promise-catch-function-in-javascript/</id>
+    <link href="https://kaifeiji.cc/post/the-promise-catch-function-in-javascript/"/>
+    <published>2023-03-01T02:38:23.000Z</published>
+    <summary>
+      <![CDATA[<p>原文：<a href="https://masteringjs.io/tutorials/fundamentals/catch">The Promise <code>catch()</code> Function in JavaScript</a></p>
+<p>Promise的catch函数是一个很方便的语法糖，用于处理Promise中的错误。</p>]]>
+    </summary>
+    <title>JavaScript中Promise的catch函数</title>
+    <updated>2026-03-03T07:15:17.839Z</updated>
+  </entry>
+</feed>

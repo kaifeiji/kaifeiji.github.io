@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="原文：Arrow Functions in JavaScript 箭头函数可以让编写函数更简洁，但有一些语法上的奇怪之处。本文描述了有效的使用箭头函数所需要了解的知识。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript的箭头函数">
+<meta property="og:url" content="https://kaifeiji.cc/post/arrow-function-in-javascript/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="原文：Arrow Functions in JavaScript 箭头函数可以让编写函数更简洁，但有一些语法上的奇怪之处。本文描述了有效的使用箭头函数所需要了解的知识。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-19T03:18:42.000Z">
+<meta property="article:modified_time" content="2026-03-03T07:15:17.835Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="箭头函数">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/arrow-function-in-javascript/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/arrow-function-in-javascript/","path":"post/arrow-function-in-javascript/","title":"JavaScript的箭头函数"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JavaScript的箭头函数 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%95%E6%97%B6%E4%BD%BF%E7%94%A8%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">何时使用箭头函数？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%95%E6%97%B6%E4%B8%8D%E4%BD%BF%E7%94%A8%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">何时不使用箭头函数？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">267</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/arrow-function-in-javascript/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JavaScript的箭头函数 | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript的箭头函数
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-19 11:18:42" itemprop="dateCreated datePublished" datetime="2023-01-19T11:18:42+08:00">2023-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mastering-JS/" itemprop="url" rel="index"><span itemprop="name">Mastering JS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>原文：<a target="_blank" rel="noopener" href="https://masteringjs.io/tutorials/fundamentals/arrow">Arrow Functions in JavaScript</a></p>
+<p>箭头函数可以让编写函数更简洁，但有一些语法上的奇怪之处。本文描述了有效的使用箭头函数所需要了解的知识。</p>
+<span id="more"></span>
+
+<p>为了解决传统函数一些常见的问题，<a target="_blank" rel="noopener" href="https://exploringjs.com/es6/ch_arrow-functions.html">箭头函数</a>从ES6开始引入。但是由于<a target="_blank" rel="noopener" href="https://mongoosejs.com/docs/faq.html#arrow-functions">一些场景箭头函数并不适用</a>，因此仍要了解何时使用传统函数，何时使用箭头函数。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p>出现<code>=&gt;</code>符号时，就代表这是一个箭头函数。有两种方式声明一个箭头函数：</p>
+<p>1、不带花括号<code>{}</code>。这种语法中，箭头函数有隐式的返回值。例如，如下箭头函数虽然没有<code>return</code>关键字，但它会返回42。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x27;getAnswer()` is an arrow function that returns 42</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getAnswer</span> = (<span class="params"></span>) =&gt; <span class="number">42</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">getAnswer</span>(); <span class="comment">// 42</span></span><br></pre></td></tr></table></figure>
+
+<p>2、带花括号<code>{}</code>。这种语法中，箭头函数不是隐式的返回。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x27;getAnswer()` is an arrow function that returns 42</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getAnswer</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">42</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="title function_">getAnswer</span>(); <span class="comment">// 42</span></span><br></pre></td></tr></table></figure>
+
+<p>箭头函数返回一个对象字面量时，有一些麻烦：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 语法错误！JavaScript认为 `=&gt;` 后的花括号是代码块，而非对象</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getObj</span> = (<span class="params"></span>) =&gt; &#123; <span class="attr">answer</span>: <span class="number">42</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用圆括号括起来的对象字面量，函数可以正确返回一个对象，`obj.answer = 42`</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getObj</span> = (<span class="params"></span>) =&gt; (&#123; <span class="attr">answer</span>: <span class="number">42</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="title function_">getObj</span>(); <span class="comment">// 42</span></span><br></pre></td></tr></table></figure>
+
+<p>不带花括号时，在箭头<code>=&gt;</code>右侧只能放一个<a target="_blank" rel="noopener" href="https://2ality.com/2012/09/expressions-vs-statements.html">表达式</a>。直观的看，这意味着在“单行程序”中只能使用不带花括号的语法。可以使用三元操作符<code>?:</code>、<code>&amp;&amp;</code>和<code>||</code>，但不能使用<code>if</code>语句或分号。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> answer = <span class="number">42</span>;</span><br><span class="line"><span class="comment">// 不带花括号，箭头函数只能包含一个表达式。</span></span><br><span class="line"><span class="comment">// 以下函数运行正常，不带花括号不能使用 `if` 语句。</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getAnswer</span> = (<span class="params"></span>) =&gt; answer !== <span class="literal">null</span> &amp;&amp; answer !== <span class="literal">undefined</span> ?</span><br><span class="line">  answer :</span><br><span class="line">  <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">getAnswer</span>(); <span class="comment">// 42</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>和普通函数一样，箭头函数可以接收0个或多个参数。除了只有一个参数的箭头函数，必须把参数名放在圆括号中，<code>(param1, param2, param3) =&gt; {}</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果箭头函数没有参数，必须带圆括号 `() =&gt;`</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getAnswer</span> = (<span class="params"></span>) =&gt; <span class="number">42</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果箭头函数只接收1个参数，可以省略参数的圆括号</span></span><br><span class="line"><span class="keyword">let</span> <span class="title function_">noop</span> = v =&gt; v;</span><br><span class="line"><span class="comment">// 以下是等效的：</span></span><br><span class="line">noop = <span class="function">(<span class="params">v</span>) =&gt;</span> v;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果箭头函数接收多于1个的参数，必须在参数名外加圆括号</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">add</span> = (<span class="params">a, b</span>) =&gt; a + b;</span><br></pre></td></tr></table></figure>
+
+<h2 id="何时使用箭头函数？"><a href="#何时使用箭头函数？" class="headerlink" title="何时使用箭头函数？"></a>何时使用箭头函数？</h2><p>箭头函数有两个主要的优势：</p>
+<p>1、单行函数的隐式返回使代码更简洁</p>
+<p>2、<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_separate_this">词法this</a>。箭头函数中的<code>this</code>与箭头函数外的this指向同一个对象。</p>
+<p>例如，在<code>setTimeout()</code>中调用一个<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Method_definitions">类方法</a>。如果不使用箭头函数，使用普通函数，<code>this</code><strong>不是</strong><code>MyClass</code>的实例。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">message</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">message</span> = message;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">print</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="comment">// undefined, 因为 `this` 是 `setTimeout()` 回调中的 `Timeout` 对象</span></span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">message</span>;</span><br><span class="line">    &#125;, <span class="number">100</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> obj = <span class="keyword">new</span> <span class="title class_">MyClass</span>(<span class="string">&#x27;Hello, World&#x27;</span>);</span><br><span class="line">obj.<span class="property">message</span>; <span class="comment">// &#x27;Hello, World&#x27;</span></span><br><span class="line">obj.<span class="title function_">print</span>();</span><br></pre></td></tr></table></figure>
+
+<p>使用箭头函数，<code>this</code>是<code>MyClass</code>的一个实例。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">message</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">message</span> = message;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">print</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// &#x27;Hello, World&#x27;</span></span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">message</span>;</span><br><span class="line">    &#125;, <span class="number">100</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> obj = <span class="keyword">new</span> <span class="title class_">MyClass</span>(<span class="string">&#x27;Hello, World&#x27;</span>);</span><br><span class="line">obj.<span class="property">message</span>; <span class="comment">// &#x27;Hello, World&#x27;</span></span><br><span class="line">obj.<span class="title function_">print</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="何时不使用箭头函数？"><a href="#何时不使用箭头函数？" class="headerlink" title="何时不使用箭头函数？"></a>何时不使用箭头函数？</h2><p>箭头函数很好用，而且很多情况箭头函数和普通函数都没问题。但在使用依赖<code>this</code>的框架中，不能使用箭头函数。</p>
+<p>例如，假设用箭头函数声明一个<a target="_blank" rel="noopener" href="https://v1.vuejs.org/guide/events.html#Method-Handler">Vue方法</a>，会无法访问Vue实例的<code>name</code>属性，因为Vue无法设置<code>this</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Vue</span> = <span class="built_in">require</span>(<span class="string">&#x27;vue&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">  <span class="attr">data</span>: <span class="function">() =&gt;</span> (&#123; <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span> &#125;),</span><br><span class="line">  <span class="comment">// 这个方法 **无法** 正常运行. Vue方法需要正确的 `this`</span></span><br><span class="line">  <span class="attr">methods</span>: &#123;</span><br><span class="line">    <span class="attr">setName</span>: <span class="function"><span class="params">newName</span> =&gt;</span> <span class="variable language_">this</span>.<span class="property">name</span> = newName</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`</span></span><br><span class="line"><span class="string">    &lt;div&gt;</span></span><br><span class="line"><span class="string">      &lt;h1&gt;&#123;&#123;name&#125;&#125;&lt;/h1&gt;</span></span><br><span class="line"><span class="string">      &lt;button v-on:click=&quot;setName(&#x27;Hello&#x27;)&quot;&gt;&lt;/button&gt;</span></span><br><span class="line"><span class="string">    &lt;/div&gt;</span></span><br><span class="line"><span class="string">  `</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>还有一个常见的例子就是<a target="_blank" rel="noopener" href="https://mochajs.org/#test-level">Mocha的timeout</a>。在<a target="_blank" rel="noopener" href="https://masteringjs.io/tutorials/mocha/intro">Mocha测试</a>中使用箭头函数，无法正确的进行timemout测试。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;MyFunction&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">it</span>(<span class="string">&#x27;works&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">timeout</span>(<span class="number">500</span>); <span class="comment">// 会抛出错误</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>一般来说，<strong>不能</strong>向框架传递箭头函数，除非可以确定不用<code>this</code>关键字。例如，在Vue方法、Mocha测试、React类方法或<a target="_blank" rel="noopener" href="https://mongoosejs.com/docs/guide.html#methods">Mongoose模型方法</a>中，不要使用箭头函数。可以在Vue方法、Mocha测试的内部使用箭头函数，但向Vue或Mocha输入的顶层函数<strong>不能</strong>是箭头函数。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/arrow-function-in-javascript/" title="JavaScript的箭头函数">https://kaifeiji.cc/post/arrow-function-in-javascript/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0/" rel="tag"># 箭头函数</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/make-javascript-objects-immutable-with-object-freeze/" rel="prev" title="用Object.freeze()使JavaScript对象不可变">
+                  <i class="fa fa-angle-left"></i> 用Object.freeze()使JavaScript对象不可变
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/check-if-a-js-array-contains-a-specific-value/" rel="next" title="检查JS数组是否包含特定值">
+                  检查JS数组是否包含特定值 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">京ICP备17013015号-1 </a>
+      <img src="/images/beian.png" alt=""><a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802032021" rel="noopener" target="_blank">京公网安备 11010802032021号 </a>
+  </div>
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
