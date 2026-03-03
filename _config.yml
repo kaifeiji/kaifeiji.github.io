@@ -8,19 +8,7 @@ subtitle: '写给未来的信'
 description: '这个人很懒，什么也没有留下'
 keywords:
 author: kaifeiji.cc
-language:
-- zh-CN
-- en
-# config hexo-generator-i18n option (optional, this is default option)
-i18n:
-  type:
-    - page
-    # - post # Disable direct copy
-  generator:
-    - archive
-    - category
-    - tag
-    - index
+language: zh-CN
 timezone: 'Asia/Shanghai'
 
 # URL
@@ -62,6 +50,8 @@ highlight:
   tab_replace: ''
   wrap: true
   hljs: false
+  exclude_languages:
+    - mermaid
 prismjs:
   enable: false
   preprocess: true
