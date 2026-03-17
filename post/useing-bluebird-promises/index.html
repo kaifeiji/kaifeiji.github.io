@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="原文：Using Bluebird Promises blurbird是JavaScript一个流行的Promise库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用bluebird操作Promise">
+<meta property="og:url" content="https://kaifeiji.cc/post/useing-bluebird-promises/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="原文：Using Bluebird Promises blurbird是JavaScript一个流行的Promise库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-03T01:46:49.000Z">
+<meta property="article:modified_time" content="2026-03-17T03:42:41.821Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="bluebird">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/useing-bluebird-promises/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/useing-bluebird-promises/","path":"post/useing-bluebird-promises/","title":"使用bluebird操作Promise"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>使用bluebird操作Promise | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8Easync-await%E6%95%B4%E5%90%88"><span class="nav-number">1.</span> <span class="nav-text">与async&#x2F;await整合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E8%AF%A5%E7%94%A8bluebird%E8%BF%98%E6%98%AF%E5%8E%9F%E7%94%9FPromise%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">应该用bluebird还是原生Promise？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">270</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/useing-bluebird-promises/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="使用bluebird操作Promise | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用bluebird操作Promise
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-03-03 09:46:49" itemprop="dateCreated datePublished" datetime="2023-03-03T09:46:49+08:00">2023-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mastering-JS/" itemprop="url" rel="index"><span itemprop="name">Mastering JS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>原文：<a target="_blank" rel="noopener" href="https://masteringjs.io/tutorials/fundamentals/bluebird">Using Bluebird Promises</a></p>
+<p>blurbird是JavaScript一个流行的Promise库。</p>
+<span id="more"></span>
+
+<p><a target="_blank" rel="noopener" href="http://bluebirdjs.com/docs/getting-started.html">bluebird</a>是一个流行的JavaScript的Promise库，它是<a target="_blank" rel="noopener" href="https://masteringjs.io/tutorials/fundamentals/promise">原生Promise</a>的替代品。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">global</span>.<span class="property">Promise</span> = <span class="built_in">require</span>(<span class="string">&#x27;bluebird&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印 &quot;42&quot;</span></span><br><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>(<span class="number">42</span>).<span class="title function_">then</span>(<span class="function"><span class="params">val</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(val));</span><br></pre></td></tr></table></figure>
+
+<p>人们为什么使用bluebird而非原生Promise？有2个原因：</p>
+<p>1、性能：</p>
+<p>早期的原生Promise实现很慢——以下基准测试代码显示，在Node.js 8中，创建一个原生Promise比创建一个bluebird的Promise慢3倍：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// global.Promise = require(&#x27;bluebird&#x27;);</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Benchmark</span> = <span class="built_in">require</span>(<span class="string">&#x27;benchmark&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> suite = <span class="keyword">new</span> <span class="title class_">Benchmark</span>.<span class="title class_">Suite</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 添加测试</span></span><br><span class="line">suite.</span><br><span class="line">  <span class="title function_">add</span>(<span class="string">&#x27;new promise&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;&#125;);</span><br><span class="line">  &#125;).</span><br><span class="line">  <span class="title function_">on</span>(<span class="string">&#x27;cycle&#x27;</span>, <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">String</span>(event.<span class="property">target</span>));</span><br><span class="line">  &#125;).</span><br><span class="line">  <span class="title function_">on</span>(<span class="string">&#x27;complete&#x27;</span>, <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Fastest is &#x27;</span> + <span class="variable language_">this</span>.<span class="title function_">filter</span>(<span class="string">&#x27;fastest&#x27;</span>).<span class="title function_">map</span>(<span class="string">&#x27;name&#x27;</span>));</span><br><span class="line">  &#125;).</span><br><span class="line">  <span class="title function_">run</span>();</span><br></pre></td></tr></table></figure>
+
+<p>以下是输出内容，首先是blurbird，然后是原生Promise：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ ~/Workspace/libs/node-v8.17.0-linux-x64/bin/node ./bluebird.js </span><br><span class="line">new promise x 36,846,162 ops/sec ±0.66% (95 runs sampled)</span><br><span class="line">Fastest is new promise</span><br><span class="line">$</span><br><span class="line">$ ~/Workspace/libs/node-v8.17.0-linux-x64/bin/node ./bluebird.js </span><br><span class="line">new promise x 12,244,609 ops/sec ±1.80% (84 runs sampled)</span><br><span class="line">Fastest is new promise</span><br></pre></td></tr></table></figure>
+
+<p>然而在Node.js 12.x中，原生Promise已经明显比bluebird要快了。</p>
+<p>2、更完整的堆栈追踪</p>
+<p>bluebird内置了对<a target="_blank" rel="noopener" href="https://thecodebarbarian.com/async-stack-traces-in-node-js-12">异步堆栈追踪</a>的支持。例如，以下代码不会打印<code>fn()</code>是在哪一行调用的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>().</span><br><span class="line">  <span class="title function_">then</span>(fn).</span><br><span class="line">  <span class="keyword">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(err));</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">setImmediate</span>(<span class="function">() =&gt;</span> <span class="title function_">reject</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;Oops&#x27;</span>)));</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ node ./test</span><br><span class="line">Error: Oops</span><br><span class="line">    at Immediate.setImmediate [as _onImmediate] (/app/test.js:8:31)</span><br><span class="line">    at runCallback (timers.js:705:18)</span><br><span class="line">    at tryOnImmediate (timers.js:676:5)</span><br><span class="line">    at processImmediate (timers.js:658:5)</span><br></pre></td></tr></table></figure>
+
+<p>但是用bluebird，可以像以下代码，开启完整堆栈追踪。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">global</span>.<span class="property">Promise</span> = <span class="built_in">require</span>(<span class="string">&#x27;bluebird&#x27;</span>);</span><br><span class="line"><span class="variable language_">global</span>.<span class="property">Promise</span>.<span class="title function_">config</span>(&#123; <span class="attr">longStackTraces</span>: <span class="literal">true</span> &#125;);</span><br><span class="line"></span><br><span class="line"><span class="title class_">Promise</span>.<span class="title function_">resolve</span>().</span><br><span class="line">  <span class="title function_">then</span>(fn).</span><br><span class="line">  <span class="keyword">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(err));</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">fn</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">setImmediate</span>(<span class="function">() =&gt;</span> <span class="title function_">reject</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;Oops&#x27;</span>)));</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行以上代码会返回如下堆栈追踪，其中包含了<code>fn()</code>调用的行号：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ node ./test</span><br><span class="line">Error: Oops</span><br><span class="line">    at Immediate.setImmediate [as _onImmediate] (/app/test.js:10:31)</span><br><span class="line">From previous event:</span><br><span class="line">    at fn (/app/test.js:9:10)</span><br><span class="line">    at runCallback (timers.js:705:18)</span><br><span class="line">    at tryOnImmediate (timers.js:676:5)</span><br><span class="line">    at processImmediate (timers.js:658:5)</span><br><span class="line">From previous event:</span><br><span class="line">    at Object.&lt;anonymous&gt; (/app/test.js:5:3)</span><br><span class="line">    at Module._compile (internal/modules/cjs/loader.js:778:30)</span><br><span class="line">    at Object.Module._extensions..js (internal/modules/cjs/loader.js:789:10)</span><br><span class="line">    at Module.load (internal/modules/cjs/loader.js:653:32)</span><br><span class="line">    at tryModuleLoad (internal/modules/cjs/loader.js:593:12)</span><br><span class="line">    at Function.Module._load (internal/modules/cjs/loader.js:585:3)</span><br><span class="line">    at Function.Module.runMain (internal/modules/cjs/loader.js:831:12)</span><br><span class="line">    at startup (internal/bootstrap/node.js:283:19)</span><br><span class="line">    at bootstrapNodeJSCore (internal/bootstrap/node.js:623:3)</span><br></pre></td></tr></table></figure>
+
+<h2 id="与async-await整合"><a href="#与async-await整合" class="headerlink" title="与async&#x2F;await整合"></a>与async&#x2F;await整合</h2><p>比较不好的一点，是<a target="_blank" rel="noopener" href="https://thecodebarbarian.com/async-functions-in-javascript.html">async函数</a>无法返回bluebird的Promise。即使设置<code>global.Promise = require(&#39;bluebird&#39;);</code>，async函数也会返回原生的Promise。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">NativePromise</span> = <span class="variable language_">global</span>.<span class="property">Promise</span>;</span><br><span class="line"><span class="variable language_">global</span>.<span class="property">Promise</span> = <span class="built_in">require</span>(<span class="string">&#x27;bluebird&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">run</span>(<span class="params"></span>) &#123; <span class="keyword">return</span> <span class="string">&#x27;Hello, World&#x27;</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> p = <span class="title function_">run</span>();</span><br><span class="line">p <span class="keyword">instanceof</span> <span class="title class_">NativePromise</span>; <span class="comment">// true</span></span><br><span class="line">p <span class="keyword">instanceof</span> <span class="variable language_">global</span>.<span class="property">Promise</span>; <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="应该用bluebird还是原生Promise？"><a href="#应该用bluebird还是原生Promise？" class="headerlink" title="应该用bluebird还是原生Promise？"></a>应该用bluebird还是原生Promise？</h2><p>2020年的现实情况是，大部分JavaScript的应用采用bluebird并没有太大优势。bluebird在Node.js和现代浏览器中，已经没有比原生Promise更好的性能优势——原生Promise实际上更快。然而，在老版本的浏览器和Node.js中，bluebird可以保证稳定的性能表现。</p>
+<p><em>async&#x2F;await是JavaScript中并发的未来趋势。<a target="_blank" rel="noopener" href="http://asyncawait.net/">“Mastering Async&#x2F;Await”</a>教你如何在几个小时内，用async&#x2F;await构建前后端APP，来看看吧！</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/useing-bluebird-promises/" title="使用bluebird操作Promise">https://kaifeiji.cc/post/useing-bluebird-promises/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/bluebird/" rel="tag"># bluebird</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/javascript-create-promise/" rel="prev" title="JavaScript创建Promise">
+                  <i class="fa fa-angle-left"></i> JavaScript创建Promise
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/drag-and-drop-using-interact-js/" rel="next" title="用interact.js实现拖拽、缩放、吸附">
+                  用interact.js实现拖拽、缩放、吸附 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

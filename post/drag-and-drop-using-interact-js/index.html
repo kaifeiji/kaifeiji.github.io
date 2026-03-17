@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="interact.js和大多数拖拽库相比有点不太一样：它提供了简单、灵活的API，对外暴露操作DOM元素所需的全部鼠标或触摸事件信息。但为了更自主的控制，**它不会对DOM元素进行任何操作！**你必须自己操作DOM，实现UI的响应——拖拽、绘制或者滚动页面等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用interact.js实现拖拽、缩放、吸附">
+<meta property="og:url" content="https://kaifeiji.cc/post/drag-and-drop-using-interact-js/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="interact.js和大多数拖拽库相比有点不太一样：它提供了简单、灵活的API，对外暴露操作DOM元素所需的全部鼠标或触摸事件信息。但为了更自主的控制，**它不会对DOM元素进行任何操作！**你必须自己操作DOM，实现UI的响应——拖拽、绘制或者滚动页面等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-01T09:15:43.000Z">
+<meta property="article:modified_time" content="2026-03-17T03:42:41.816Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="drag">
+<meta property="article:tag" content="drop">
+<meta property="article:tag" content="resize">
+<meta property="article:tag" content="snap">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/drag-and-drop-using-interact-js/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/drag-and-drop-using-interact-js/","path":"post/drag-and-drop-using-interact-js/","title":"用interact.js实现拖拽、缩放、吸附"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>用interact.js实现拖拽、缩放、吸附 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Action%EF%BC%88%E6%93%8D%E4%BD%9C%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Action（操作）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">Action基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E7%9A%84%E4%B8%89%E7%A7%8D%E5%9B%9E%E8%B0%83%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">Action的三种回调形式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E5%8F%82%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">Action参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action%E7%9A%84%E5%90%AF%E7%94%A8-%E5%85%B3%E9%97%AD%E7%8A%B6%E6%80%81"><span class="nav-number">2.4.</span> <span class="nav-text">Action的启用&#x2F;关闭状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dropzone%EF%BC%88%E6%94%BE%E7%BD%AE%E5%8C%BA%EF%BC%89"><span class="nav-number">2.5.</span> <span class="nav-text">Dropzone（放置区）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Modifier%EF%BC%88%E4%BF%AE%E6%94%B9%E5%99%A8%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">Modifier（修改器）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Restrict%EF%BC%88%E9%99%90%E5%88%B6%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">Restrict（限制）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snapping%EF%BC%88%E5%90%B8%E9%99%84%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">Snapping（吸附）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snapping%E7%9A%84targets"><span class="nav-number">3.3.</span> <span class="nav-text">Snapping的targets</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pointer%E4%BA%8B%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">Pointer事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">270</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/drag-and-drop-using-interact-js/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="用interact.js实现拖拽、缩放、吸附 | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用interact.js实现拖拽、缩放、吸附
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-07-01 17:15:43" itemprop="dateCreated datePublished" datetime="2023-07-01T17:15:43+08:00">2023-07-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>interact.js和大多数拖拽库相比有点不太一样：它提供了简单、灵活的API，对外暴露操作DOM元素所需的全部鼠标或触摸事件信息。但为了更自主的控制，**它不会对DOM元素进行任何操作！**你必须自己操作DOM，实现UI的响应——拖拽、绘制或者滚动页面等。</p>
+<span id="more"></span>
+
+<p>这是一个很特别的拖拽库：</p>
+<ul>
+<li>将不同浏览器和设备中的原生鼠标或触摸事件，封装成自定义事件，以一致的API将用户操作传递给事件回调</li>
+<li>不会对DOM进行实际的拖拽操作，需要在事件回调中，自行实现拖拽或其他任何DOM操作</li>
+<li>提供modifier接口，可以对自定义事件进行修改，以实现吸附、限制等功能</li>
+</ul>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>为了避免枯燥的概念，可以先看一个用interact.js实现的，包含吸附和左对齐的组件拖拽demo：</p>
+<p><a href="/post-attach/drag-and-drop.html">组件拖拽demo</a></p>
+<h2 id="Action（操作）"><a href="#Action（操作）" class="headerlink" title="Action（操作）"></a>Action（操作）</h2><p>Action是interact.js定义的一种概念，有三种Action——Draggable、Resizable和Gesturable，对应拖拽、缩放、手势（移动端）三种操作。</p>
+<p>在这些Action中，实现了对鼠标或触摸操作中原生事件的封装，并将事件对象interaction暴露给事件回调。</p>
+<h3 id="Action基本语法"><a href="#Action基本语法" class="headerlink" title="Action基本语法"></a>Action基本语法</h3><p>Draggable、Resizable和Gesturable三者的基本语法是一致的，以Draggable为例：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-class">.draggable</span> &#123;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">width</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">height</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">  touch-action: none;</span></span><br><span class="line"><span class="language-css">  user-select: none;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://unpkg.com/interactjs/dist/interact.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;draggable&quot;</span>&gt;</span> Draggable Element <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="keyword">const</span> position = &#123; <span class="attr">x</span>: <span class="number">0</span>, <span class="attr">y</span>: <span class="number">0</span> &#125;</span></span><br><span class="line"><span class="language-javascript"><span class="comment">// 用CSS选择器构造Interactable对象，也可以直接传入DOM元素</span></span></span><br><span class="line"><span class="language-javascript"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>)</span></span><br><span class="line"><span class="language-javascript"><span class="comment">// Interactable对象定义拖拽操作</span></span></span><br><span class="line"><span class="language-javascript">.<span class="title function_">draggable</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 开始拖拽回调，触发一次</span></span></span><br><span class="line"><span class="language-javascript">  onstart (event) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(event.<span class="property">type</span>, event.<span class="property">target</span>)</span></span><br><span class="line"><span class="language-javascript">  &#125;,</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 拖拽移动回调，触发多次</span></span></span><br><span class="line"><span class="language-javascript">  onmove (event) &#123;</span></span><br><span class="line"><span class="language-javascript">    position.<span class="property">x</span> += event.<span class="property">dx</span></span></span><br><span class="line"><span class="language-javascript">    position.<span class="property">y</span> += event.<span class="property">dy</span></span></span><br><span class="line"><span class="language-javascript">    <span class="comment">// 进行实际的DOM操作，实现拖拽的UI响应</span></span></span><br><span class="line"><span class="language-javascript">    event.<span class="property">target</span>.<span class="property">style</span>.<span class="property">transform</span> = <span class="string">`translate(<span class="subst">$&#123;position.x&#125;</span>px, <span class="subst">$&#123;position.y&#125;</span>px)`</span></span></span><br><span class="line"><span class="language-javascript">  &#125;,</span></span><br><span class="line"><span class="language-javascript">  <span class="comment">// 结束拖拽回调，触发一次</span></span></span><br><span class="line"><span class="language-javascript">  onend (event) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(event.<span class="property">type</span>, event.<span class="property">target</span>)</span></span><br><span class="line"><span class="language-javascript">  &#125;,</span></span><br><span class="line"><span class="language-javascript">&#125;)</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Action的三种回调形式"><a href="#Action的三种回调形式" class="headerlink" title="Action的三种回调形式"></a>Action的三种回调形式</h3><p>需要注意的是，Action的回调函数提供了三个语法形式，它们的效果完全一样，可以选择任意一个使用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 直接在Action参数中定义</span></span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  onstart (e) &#123; &#125;,</span><br><span class="line">  onmove (e) &#123; &#125;,</span><br><span class="line">  oninertiastart (e) &#123; &#125;,</span><br><span class="line">  onend (e) &#123; &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 在Action参数的listeners中定义</span></span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">listeners</span>: &#123;</span><br><span class="line">    start (e) &#123; &#125;,</span><br><span class="line">    move (e) &#123; &#125;,</span><br><span class="line">    <span class="title function_">inertiastart</span>(<span class="params">e</span>) &#123; &#125;,</span><br><span class="line">    end (e) &#123; &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 用Interactable的on方法定义</span></span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;&#125;)</span><br><span class="line">.<span class="title function_">on</span>(<span class="string">&#x27;dragstart&#x27;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;&#125;)</span><br><span class="line">.<span class="title function_">on</span>(<span class="string">&#x27;dragmove&#x27;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;&#125;)</span><br><span class="line">.<span class="title function_">on</span>(<span class="string">&#x27;draginertiastart&#x27;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;&#125;)</span><br><span class="line">.<span class="title function_">on</span>(<span class="string">&#x27;dragend&#x27;</span>, <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>Resizable对应的三种形式的事件为：</p>
+<ul>
+<li>直接定义 - <code>onstart</code> <code>onmove</code> <code>oninertiastart</code> <code>onend</code></li>
+<li>listeners定义 - <code>start</code> <code>move</code> <code>inertiastart</code> <code>end</code></li>
+<li>on定义 - <code>resizestart</code> <code>resizemove</code> <code>resizeinertiastart</code> <code>resizeend</code></li>
+</ul>
+<p>Gesturable对应的三种形式的事件为：</p>
+<ul>
+<li>直接定义 - <code>onstart</code> <code>onmove</code> <code>onend</code></li>
+<li>listeners定义 - <code>start</code> <code>move</code> <code>end</code></li>
+<li>on定义 - <code>gesturestart</code> <code>gesturemove</code> <code>gestureend</code></li>
+</ul>
+<h3 id="Action参数"><a href="#Action参数" class="headerlink" title="Action参数"></a>Action参数</h3><p>Draggable、Resizable、Gesturable三种Action，有一些公共参数(<a target="_blank" rel="noopener" href="https://interactjs.io/docs/action-options/">Action Options</a>)，公共参数可以对Action进行一些扩展或约束：</p>
+<ul>
+<li><code>max</code> - 限制Interactable的事件绑定数</li>
+<li><code>maxPerElement</code> - 限制Interactable对象和对应元素的事件绑定数</li>
+<li><code>manualStart</code> - 手动启动事件</li>
+<li><code>hold</code> - 长按指定毫秒数，才能触发Action</li>
+<li><code>inertia</code> - 实现惯性拖拽、缩放</li>
+<li><code>styleCursor</code> - 开关拖拽、缩放的鼠标指针样式</li>
+<li><code>cursorChecker</code> - 根据事件手动设置鼠标指针样式</li>
+<li><code>autoScroll</code> - 鼠标超出范围时，是否允许容器滚动</li>
+<li><code>allowFrom</code> - 定义可操作的范围或元素（相当于拖拽、缩放把手）</li>
+<li><code>ignoreFrom</code> - 定义不可操作的范围或元素</li>
+<li><code>enabled</code> - 是否启用</li>
+</ul>
+<p>除了这些公共参数，Draggable和Resizable还分别有各自的专有参数，可以在文档各章节找到：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://interactjs.io/docs/draggable/#lockaxis-and-startaxis">Draggable</a></li>
+<li><a target="_blank" rel="noopener" href="https://interactjs.io/docs/resizable/#invert">Resizable</a></li>
+</ul>
+<h3 id="Action的启用-关闭状态"><a href="#Action的启用-关闭状态" class="headerlink" title="Action的启用&#x2F;关闭状态"></a>Action的启用&#x2F;关闭状态</h3><p>用<code>enabled</code>参数，可以设置Action的开关状态。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化一个不启用的Draggable</span></span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">enabled</span>: <span class="literal">false</span>,</span><br><span class="line">  onmove (event) &#123; <span class="variable language_">console</span>.<span class="title function_">log</span>(event) &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">// 在合适的时机再启用</span></span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">enabled</span>: <span class="literal">true</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Dropzone（放置区）"><a href="#Dropzone（放置区）" class="headerlink" title="Dropzone（放置区）"></a>Dropzone（放置区）</h3><p>Dropzone可以定义一个拖拽的放置区，主要和Draggable配合，实现拖拽-移动-放置的效果。</p>
+<p>在Dropzone的回调事件中，可以操作放置区本身（<code>event.target</code>），也可以操作拖拽元素（<code>event.relatedTarget</code>）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.dropzone&#x27;</span>).<span class="title function_">dropzone</span>(&#123;</span><br><span class="line">  <span class="comment">// 只接受.draggable的拖放</span></span><br><span class="line">  <span class="attr">accept</span>: <span class="string">&#x27;.draggable&#x27;</span>,</span><br><span class="line">  <span class="comment">// 判断何时可以松开鼠标，实现放置</span></span><br><span class="line">  <span class="attr">overlap</span>: <span class="number">1.0</span>,</span><br><span class="line">  <span class="comment">// 也有三种形式的事件回调</span></span><br><span class="line">  <span class="attr">ondropactivate</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">  <span class="attr">ondropmove</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">  <span class="attr">ondragenter</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">  <span class="attr">ondragleave</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">  <span class="attr">ondrop</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">  <span class="attr">ondropdeactivate</span>: <span class="function">(<span class="params">event</span>) =&gt;</span> &#123; &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Modifier（修改器）"><a href="#Modifier（修改器）" class="headerlink" title="Modifier（修改器）"></a>Modifier（修改器）</h2><p>在Action中，<code>modifiers</code>参数接收一个数组，数组包含一系列的Modifier对象，用于按顺序对Action的事件进行修改。</p>
+<p>interact.js提供了两种内置的Modifier——Restrict（限制）和Snapping（吸附）。</p>
+<h3 id="Restrict（限制）"><a href="#Restrict（限制）" class="headerlink" title="Restrict（限制）"></a>Restrict（限制）</h3><p>Restrict是一种限制鼠标或元素移动范围的Modifier。</p>
+<p>如以下示例代码，<code>interact.modifiers.restrictRect</code>定义了拖拽事件中，元素不能超出父元素的修改器。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.son&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">modifiers</span>: [</span><br><span class="line">    interact.<span class="property">modifiers</span>.<span class="title function_">restrictRect</span>(&#123;</span><br><span class="line">      <span class="attr">restriction</span>: <span class="string">&#x27;parent&#x27;</span>,</span><br><span class="line">    &#125;)</span><br><span class="line">  ],</span><br><span class="line">  <span class="title function_">onmove</span>(<span class="params">event</span>) &#123; &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>它会在onmove事件回调触发前，判断元素是否超出了父元素：</p>
+<ul>
+<li>如果x方向超出父元素，将<code>event.dx</code>（x方向位移）修改为0</li>
+<li>如果y方向超出父元素，将<code>event.dy</code>（y方向位移）修改为0</li>
+<li>如果没有超出父元素，不进行修改，忠实反映用户鼠标移动</li>
+</ul>
+<p>这样，在onmove中定义的DOM操作，会在元素即将超出父元素时停止移动，实现 <code>restrictRect</code> 的限制逻辑。</p>
+<p>除了restrict，还可以根据不同的需要，使用<code>restrict</code>、<code>elementRect</code>、<code>restrictSize</code>、<code>restrictEdge</code>（<a target="_blank" rel="noopener" href="https://interactjs.io/docs/restriction/#restrict">Restrict</a>）。</p>
+<h3 id="Snapping（吸附）"><a href="#Snapping（吸附）" class="headerlink" title="Snapping（吸附）"></a>Snapping（吸附）</h3><p>Snapping也是一种Modifier，它指定一系列的坐标点或轴线，在元素靠近时，实现吸附效果。</p>
+<p>如以下示例代码，<code>interact.modifiers.snap</code>定义了拖拽事件中，元素的左上角、中心和右下角，在靠近到50px距离时，会吸附到父元素(300, 300)的坐标点。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">modifiers</span>: [</span><br><span class="line">    interact.<span class="property">modifiers</span>.<span class="title function_">snap</span>(&#123;</span><br><span class="line">      <span class="attr">offset</span>: <span class="string">&#x27;parent&#x27;</span>,</span><br><span class="line">      <span class="attr">targets</span>: [ &#123; <span class="attr">x</span>: <span class="number">300</span>, <span class="attr">y</span>: <span class="number">300</span> &#125; ],</span><br><span class="line">      <span class="attr">range</span>: <span class="number">50</span>,</span><br><span class="line">      <span class="attr">relativePoints</span>: [</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">0</span>, <span class="attr">y</span>: <span class="number">0</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">0.5</span>, <span class="attr">y</span>: <span class="number">0.5</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">1</span> &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;)</span><br><span class="line">  ],</span><br><span class="line">  onmove (event) &#123; &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>它会在onmove事件回调触发前，判断元素的3个点和(300, 300)的距离：</p>
+<ul>
+<li>如果距离减小到50px，修改<code>event.dx</code>，<code>event.dy</code>，吸附过去</li>
+<li>如果距离增大超过50px，修改<code>event.dx</code>，<code>event.dy</code>，取消吸附，有一个弹开的效果</li>
+<li>如果距离大于50px，不进行修改，忠实反映用户鼠标移动</li>
+</ul>
+<p>这样，在onmove中定义的DOM操作，会实现真正的吸附效果。</p>
+<p>除了snap，还可以根据不同的需要，使用<code>snapSize</code>、<code>snapEdges</code>、[Snapping]（(<a target="_blank" rel="noopener" href="https://interactjs.io/docs/snapping/#snapsize)%EF%BC%89%E3%80%82">https://interactjs.io/docs/snapping/#snapsize)）。</a></p>
+<h3 id="Snapping的targets"><a href="#Snapping的targets" class="headerlink" title="Snapping的targets"></a>Snapping的targets</h3><p>Snapping中的 <code>targets</code> 参数，接收一个数组，数组中可以是：</p>
+<ul>
+<li>类似 <code>{ x: 100, y: 100 }</code> 的吸附点对象</li>
+<li>类似 <code>{ x: 100 }</code> 的吸附线对象</li>
+<li>一个函数，接收当前事件信息，返回吸附点或吸附线对象</li>
+<li>用 <code>interact.snappers.grid</code> 生成的网格</li>
+</ul>
+<p>数组中的多个对象或函数，interact.js会在内部判断距离最近的吸附，最终执行吸附。</p>
+<p>其中直接传入点对象、线对象和网格比较死板，不能实现动态的吸附效果。</p>
+<p>用函数的方式，可以根据事件信息、元素相对位置等，通过实时计算，达到动态吸附效果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">snapFunc</span> (</span><br><span class="line">  x,</span><br><span class="line">  y,</span><br><span class="line">  interaction, </span><br><span class="line">  &#123; <span class="attr">x</span>: offsetX, <span class="attr">y</span>: offsetY, relativePoint, <span class="attr">index</span>: relativePointIndex &#125;,</span><br><span class="line">  index</span><br><span class="line">) &#123;</span><br><span class="line">  <span class="keyword">let</span> snapX = <span class="number">0</span>, snapY = <span class="number">0</span>, snapRange = <span class="number">100</span></span><br><span class="line">  <span class="comment">// 根据实际需要，计算吸附的坐标值和吸附距离</span></span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">x</span>: snapX,</span><br><span class="line">    <span class="attr">y</span>: snapY,</span><br><span class="line">    <span class="attr">range</span>: snapRange,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.draggable&#x27;</span>).<span class="title function_">draggable</span>(&#123;</span><br><span class="line">  <span class="attr">modifiers</span>: [</span><br><span class="line">    interact.<span class="property">modifiers</span>.<span class="title function_">snap</span>(&#123;</span><br><span class="line">      <span class="attr">offset</span>: <span class="string">&#x27;parent&#x27;</span>,</span><br><span class="line">      <span class="attr">targets</span>: [ snapFunc ],</span><br><span class="line">      <span class="attr">range</span>: <span class="number">50</span>,</span><br><span class="line">      <span class="attr">relativePoints</span>: [</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">0</span>, <span class="attr">y</span>: <span class="number">0</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">0</span>, <span class="attr">y</span>: <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">1</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">x</span>: <span class="number">1</span>, <span class="attr">y</span>: <span class="number">0</span> &#125;,</span><br><span class="line">      ]</span><br><span class="line">    &#125;)</span><br><span class="line">  ],</span><br><span class="line">  onmove (event) &#123; &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pointer事件"><a href="#Pointer事件" class="headerlink" title="Pointer事件"></a>Pointer事件</h2><p>除了Action这种组合操作的事件，interact.js也支持原子化的鼠标或触摸事件：</p>
+<ul>
+<li><code>down</code></li>
+<li><code>move</code></li>
+<li><code>up</code></li>
+<li><code>cancel</code></li>
+<li><code>tap</code></li>
+<li><code>doubletap</code></li>
+<li><code>hold</code></li>
+</ul>
+<p>例如长按事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">interact</span>(<span class="string">&#x27;.button&#x27;</span>).<span class="title function_">on</span>(<span class="string">&#x27;hold&#x27;</span>, <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(event.<span class="property">type</span>, event.<span class="property">target</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>interact.js的使用全流程：</p>
+<ul>
+<li>interact.js通过<code>interact(&#39;.css-selector&#39;)</code>初始化一个Interactable对象</li>
+<li>Interactable对象可以定义Action，包括Draggable、Resizable和Gesturable，也可以定义一个Dropzone放置区</li>
+<li>Action在鼠标或触摸操作过程中，将原生事件封装为interaction事件，并暴露给Action的事件回调</li>
+<li>使用者可以在Action的事件回调中，根据interaction事件反映的用户操作，进行实际的DOM操作</li>
+<li>DOM操作的自由度，可以非常灵活的实现各种UI响应，局限只在于你的想象力</li>
+<li>Modifier提供了一种修改interaction事件的机制，官方默认提供了Snapping（吸附）和Restrict（限制）两种修改器</li>
+<li>可以参照Modifier源码，创造一个鸭子类型的修改器，修改interaction事件，实现自定义的效果</li>
+</ul>
+<p>总体来说，interact.js是一个比较简单的拖拽库，其优势在于灵活性——你可以让拖拽行为变成在canvas上画画，也可以用手势实现一个类似愤怒小鸟的拉弹弓的弹性效果。另外，如果对于性能有非常极限的要求，你可以在DOM操作中做各种艺术体操，满足性能指标。</p>
+<p>如果你只是简单想实现一个拖拽商品列表的功能，那么建议不要使用interact.js，去用其他正常一点的拖拽库吧。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/drag-and-drop-using-interact-js/" title="用interact.js实现拖拽、缩放、吸附">https://kaifeiji.cc/post/drag-and-drop-using-interact-js/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/drag/" rel="tag"># drag</a>
+              <a href="/tags/drop/" rel="tag"># drop</a>
+              <a href="/tags/resize/" rel="tag"># resize</a>
+              <a href="/tags/snap/" rel="tag"># snap</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/useing-bluebird-promises/" rel="prev" title="使用bluebird操作Promise">
+                  <i class="fa fa-angle-left"></i> 使用bluebird操作Promise
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/javascript-promise-chaining/" rel="next" title="JavaScript的Promise链">
+                  JavaScript的Promise链 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

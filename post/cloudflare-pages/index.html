@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="作为一个折腾党，最初的设想是将网站跑在自家的树莓派上，通过 Cloudflare Tunnel 实现内网穿透。 虽然这种方式极具“极客感”，但在实际使用中发现，家庭宽带的上行速度和不稳定的延迟，树莓派本身的性能，对于一个博客来说还是略显吃力。 经过一番探索，将主站迁移至 Cloudflare Pages。这篇文章将记录这一转变背后的逻辑、操作步骤以及安全配置心得。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从树莓派内网穿透到 Cloudflare Pages">
+<meta property="og:url" content="https://kaifeiji.cc/post/cloudflare-pages/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="作为一个折腾党，最初的设想是将网站跑在自家的树莓派上，通过 Cloudflare Tunnel 实现内网穿透。 虽然这种方式极具“极客感”，但在实际使用中发现，家庭宽带的上行速度和不稳定的延迟，树莓派本身的性能，对于一个博客来说还是略显吃力。 经过一番探索，将主站迁移至 Cloudflare Pages。这篇文章将记录这一转变背后的逻辑、操作步骤以及安全配置心得。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-03-09T05:16:57.000Z">
+<meta property="article:modified_time" content="2026-03-17T03:42:41.816Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="Cloudflare">
+<meta property="article:tag" content="Pages">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/cloudflare-pages/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/cloudflare-pages/","path":"post/cloudflare-pages/","title":"从树莓派内网穿透到 Cloudflare Pages"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从树莓派内网穿透到 Cloudflare Pages | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9-Cloudflare-Pages%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">一、 为什么选择 Cloudflare Pages？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81-%E8%BF%81%E7%A7%BB%E6%8C%87%E5%8D%97%EF%BC%9A5-%E5%88%86%E9%92%9F%E5%AE%8C%E6%88%90%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">二、 迁移指南：5 分钟完成部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%B3%E8%81%94%E4%BB%93%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">1. 关联仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%85%8D%E7%BD%AE%E6%9E%84%E5%BB%BA%EF%BC%88Build-Settings%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">2. 配置构建（Build Settings）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%91%E5%AE%9A%E5%9F%9F%E5%90%8D"><span class="nav-number">2.3.</span> <span class="nav-text">3. 绑定域名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%8F%91%E5%B8%83%E4%B8%8A%E7%BA%BF"><span class="nav-number">2.4.</span> <span class="nav-text">4. 发布上线</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81-%E5%AE%89%E5%85%A8%E4%B8%8E%E6%80%A7%E8%83%BD%E7%9A%84%E2%80%9C%E5%85%A8%E5%89%AF%E6%AD%A6%E8%A3%85%E2%80%9D"><span class="nav-number">3.</span> <span class="nav-text">三、 安全与性能的“全副武装”</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%98%BB%E5%87%BB-AI-%E7%88%AC%E8%99%AB"><span class="nav-number">3.1.</span> <span class="nav-text">1. 阻击 AI 爬虫</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AF%B9%E6%8A%97%E6%A8%A1%E5%BC%8F-Bot-Fight-Mode"><span class="nav-number">3.2.</span> <span class="nav-text">2. 机器人对抗模式 (Bot Fight Mode)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%A1%B5%E9%9D%A2%E6%8A%A4%E7%9B%BE-Page-Shield"><span class="nav-number">3.3.</span> <span class="nav-text">3. 页面护盾 (Page Shield)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">结语</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">270</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/cloudflare-pages/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从树莓派内网穿透到 Cloudflare Pages | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从树莓派内网穿透到 Cloudflare Pages
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-03-09 13:16:57" itemprop="dateCreated datePublished" datetime="2026-03-09T13:16:57+08:00">2026-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%98%E8%85%BE/" itemprop="url" rel="index"><span itemprop="name">折腾</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>作为一个折腾党，最初的设想是将网站跑在自家的<strong>树莓派</strong>上，通过 <strong>Cloudflare Tunnel</strong> 实现内网穿透。</p>
+<p>虽然这种方式极具“极客感”，但在实际使用中发现，家庭宽带的上行速度和不稳定的延迟，树莓派本身的性能，对于一个博客来说还是略显吃力。</p>
+<p>经过一番探索，将主站迁移至 <strong>Cloudflare Pages</strong>。这篇文章将记录这一转变背后的逻辑、操作步骤以及安全配置心得。</p>
+<span id="more"></span>
+
+<h2 id="一、-为什么选择-Cloudflare-Pages？"><a href="#一、-为什么选择-Cloudflare-Pages？" class="headerlink" title="一、 为什么选择 Cloudflare Pages？"></a>一、 为什么选择 Cloudflare Pages？</h2><p>在对比了 <strong>GitHub Pages</strong>、<strong>本地树莓派托管</strong>和 <strong>Cloudflare Pages</strong> 后，后者的优势显而易见：</p>
+<ol>
+<li><strong>全球加速（CDN）</strong>：内容分发至全球 300+ 边缘节点，国内访问不再经过我家那根细细的网线。</li>
+<li><strong>自动构建（CI&#x2F;CD）</strong>：只需 <code>git push</code> 到 GitHub，Cloudflare 会自动完成代码拉取、构建和发布。</li>
+<li><strong>无限可能（Functions）</strong>：支持 Serverless 函数，静态页面也能跑后端逻辑。</li>
+<li><strong>安全加固</strong>：自带 Bot 防护、脚本监控等企业级安全开关。</li>
+</ol>
+<hr>
+<h2 id="二、-迁移指南：5-分钟完成部署"><a href="#二、-迁移指南：5-分钟完成部署" class="headerlink" title="二、 迁移指南：5 分钟完成部署"></a>二、 迁移指南：5 分钟完成部署</h2><p>如果你已经有了 GitHub 仓库和自定义域名（如我的 <code>kaifeiji.cc</code>），迁移过程极其顺滑：</p>
+<h3 id="1-关联仓库"><a href="#1-关联仓库" class="headerlink" title="1. 关联仓库"></a>1. 关联仓库</h3><p>在 Cloudflare 控制台进入 <strong>Workers &amp; Pages</strong>，选择 <strong>Connect to Git</strong>。授权后选择你的项目仓库。</p>
+<h3 id="2-配置构建（Build-Settings）"><a href="#2-配置构建（Build-Settings）" class="headerlink" title="2. 配置构建（Build Settings）"></a>2. 配置构建（Build Settings）</h3><ul>
+<li><strong>框架预设</strong>：如果你是纯 HTML，选 <strong>None</strong>；如果是 Hugo&#x2F;Hexo，选择对应框架。</li>
+<li><strong>构建命令</strong>：使用框架默认值即可。</li>
+<li><strong>输出目录</strong>：通常为 <code>/</code> 或 <code>public</code>。</li>
+</ul>
+<h3 id="3-绑定域名"><a href="#3-绑定域名" class="headerlink" title="3. 绑定域名"></a>3. 绑定域名</h3><p>在 Pages 项目的 <strong>Custom domains</strong> 选项卡中添加你的主域名。由于我的 DNS 解析已在 Cloudflare，系统会自动完成 CNAME 记录的替换，实现无缝切换。</p>
+<h3 id="4-发布上线"><a href="#4-发布上线" class="headerlink" title="4. 发布上线"></a>4. 发布上线</h3><p>在 Github 进行代码提交后，Cloudflare 会自动触发构建和部署流程。几分钟后，博客就会在 Cloudflare Pages 上更新。</p>
+<hr>
+<h2 id="三、-安全与性能的“全副武装”"><a href="#三、-安全与性能的“全副武装”" class="headerlink" title="三、 安全与性能的“全副武装”"></a>三、 安全与性能的“全副武装”</h2><p>托管在云端并不意味着可以掉以轻心。为 <code>kaifeiji.cc</code> 开启了以下增强配置：</p>
+<h3 id="1-阻击-AI-爬虫"><a href="#1-阻击-AI-爬虫" class="headerlink" title="1. 阻击 AI 爬虫"></a>1. 阻击 AI 爬虫</h3><p>在 AI 大模型时代，为了保护原创内容不被白嫖，我开启了 <strong>Block AI training bots</strong>。同时通过 <strong>Manage robots.txt</strong> 自动声明禁爬协议，既有“硬拦截”也有“软告示”。</p>
+<h3 id="2-机器人对抗模式-Bot-Fight-Mode"><a href="#2-机器人对抗模式-Bot-Fight-Mode" class="headerlink" title="2. 机器人对抗模式 (Bot Fight Mode)"></a>2. 机器人对抗模式 (Bot Fight Mode)</h3><p>开启此模式可以有效过滤掉那些无意义的扫描器和恶意爬虫，节省资源的同时让统计数据更真实。</p>
+<h3 id="3-页面护盾-Page-Shield"><a href="#3-页面护盾-Page-Shield" class="headerlink" title="3. 页面护盾 (Page Shield)"></a>3. 页面护盾 (Page Shield)</h3><p>实时监控网站加载的第三方脚本。对于个人站长来说，这能有效防止因插件漏洞导致的供应链攻击。</p>
+<hr>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>如果你也在纠结，不妨试试 Cloudflare Pages，它可能是目前个人博客最省心的方案。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/cloudflare-pages/" title="从树莓派内网穿透到 Cloudflare Pages">https://kaifeiji.cc/post/cloudflare-pages/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Cloudflare/" rel="tag"># Cloudflare</a>
+              <a href="/tags/Pages/" rel="tag"># Pages</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/openclaw-and-blog/" rel="prev" title="Openclaw和博客">
+                  <i class="fa fa-angle-left"></i> Openclaw和博客
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/using-openspec/" rel="next" title="Openspec 使用心得">
+                  Openspec 使用心得 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>

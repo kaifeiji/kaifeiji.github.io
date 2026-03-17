@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="DBA 在日常工作中，最常用的就是查询数据语句——SELECT 语句。 本文简单介绍 SELECT 语句的基本语法，包括过滤、聚合、分组、排序、唯一值、分组过滤等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤">
+<meta property="og:url" content="https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="DBA 在日常工作中，最常用的就是查询数据语句——SELECT 语句。 本文简单介绍 SELECT 语句的基本语法，包括过滤、聚合、分组、排序、唯一值、分组过滤等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782397981.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782425559.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782454626.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782494019.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782499284.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782504305.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782538195.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782548167.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782570042.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782593105.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782612076.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782622443.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782980489.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782930754.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782994427.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561782651121.png">
+<meta property="og:image" content="https://kaifeiji.cc/post-images/1561783019680.png">
+<meta property="article:published_time" content="2018-01-27T04:05:24.000Z">
+<meta property="article:modified_time" content="2026-03-17T03:42:41.820Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="Select">
+<meta property="article:tag" content="分组">
+<meta property="article:tag" content="分组过滤">
+<meta property="article:tag" content="唯一值">
+<meta property="article:tag" content="排序">
+<meta property="article:tag" content="聚合">
+<meta property="article:tag" content="过滤">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://kaifeiji.cc/post-images/1561782397981.png">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/","path":"post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/","title":"SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%B6%E3%80%81%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.</span> <span class="nav-text">零、查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%BF%87%E6%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">一、过滤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%81%9A%E5%90%88"><span class="nav-number">3.</span> <span class="nav-text">二、聚合</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%86%E7%BB%84"><span class="nav-number">4.</span> <span class="nav-text">三、分组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8E%92%E5%BA%8F"><span class="nav-number">5.</span> <span class="nav-text">四、排序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%A4%9A%E4%B8%AA%E6%9D%A1%E4%BB%B6%E7%9A%84%E8%BF%87%E6%BB%A4%E3%80%81%E5%88%86%E7%BB%84%E5%92%8C%E6%8E%92%E5%BA%8F"><span class="nav-number">6.</span> <span class="nav-text">五、多个条件的过滤、分组和排序</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E7%BB%84%E5%90%88%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="nav-number">7.</span> <span class="nav-text">六、组合条件查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81DISTINCT-%E5%94%AF%E4%B8%80%E5%80%BC"><span class="nav-number">8.</span> <span class="nav-text">七、DISTINCT 唯一值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81HAVING-%E5%88%86%E7%BB%84%E8%BF%87%E6%BB%A4"><span class="nav-number">9.</span> <span class="nav-text">八、HAVING 分组过滤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-number">10.</span> <span class="nav-text">九、执行顺序</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">270</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤 | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-01-27 12:05:24" itemprop="dateCreated datePublished" datetime="2018-01-27T12:05:24+08:00">2018-01-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>DBA 在日常工作中，最常用的就是查询数据语句——SELECT 语句。</p>
+<p>本文简单介绍 SELECT 语句的基本语法，包括过滤、聚合、分组、排序、唯一值、分组过滤等。</p>
+<span id="more"></span>
+
+<h1 id="零、查询"><a href="#零、查询" class="headerlink" title="零、查询"></a>零、查询</h1><p>通过 SELECT 语句，查询到了 TBH 表中所有记录的 ZL（坐落）和 SZCC（所在层次），SELECT 语句最简单的格式：</p>
+<p><img src="/post-images/1561782397981.png" alt="SELECT语句详解"></p>
+<h1 id="一、过滤"><a href="#一、过滤" class="headerlink" title="一、过滤"></a>一、过滤</h1><p>一般而言，在使用 SELECT 语句时，不需要查询所有记录，而是有选择的查询特定的记录，这时就需要用到过滤语句。例如，加入了 WHERE 条件，过滤出所在层次为 1 的记录：</p>
+<p><img src="/post-images/1561782425559.png" alt="SELECT语句详解"></p>
+<h1 id="二、聚合"><a href="#二、聚合" class="headerlink" title="二、聚合"></a>二、聚合</h1><p>需要查询记录的数量、某字段最大值、某字段最小值、某字段总和、某字段平均值就需要用到聚合函数。</p>
+<ol>
+<li>所在层次为 1 的数量：</li>
+</ol>
+<p><img src="/post-images/1561782454626.png" alt="SELECT语句详解"></p>
+<ol start="2">
+<li>层号最大值：</li>
+</ol>
+<p><img src="/post-images/1561782494019.png" alt="SELECT语句详解"></p>
+<ol start="3">
+<li>层号最小值：</li>
+</ol>
+<p><img src="/post-images/1561782499284.png" alt="SELECT语句详解"></p>
+<ol start="4">
+<li>实测建筑面积总和：</li>
+</ol>
+<p><img src="/post-images/1561782504305.png" alt="SELECT语句详解"></p>
+<ol start="5">
+<li>实测建筑面积平均值：</li>
+</ol>
+<p><img src="/post-images/1561782538195.png" alt="SELECT语句详解"></p>
+<h1 id="三、分组"><a href="#三、分组" class="headerlink" title="三、分组"></a>三、分组</h1><p>如果需要查询每一层的数量，笨一点的方法，可以用如下语句：</p>
+<p><img src="/post-images/1561782548167.png" alt="SELECT语句详解"></p>
+<p>也可以用更简单的分组语句：</p>
+<p><img src="/post-images/1561782570042.png" alt="SELECT语句详解"></p>
+<p>在这里，GROUP BY 将各个层号的记录进行了分组，可以通过 COUNT 来查询每一个层号的数量。</p>
+<p>需要注意的是，用 GROUP BY 语句查询时，查询的内容只能是 GROUP BY 之后的字段以及其他字段的聚合函数（即 COUNT、MAX、MIN、SUM、AVG），否则语句无法执行。</p>
+<h1 id="四、排序"><a href="#四、排序" class="headerlink" title="四、排序"></a>四、排序</h1><p>排序就比较容易理解了，是以 ORDER BY 后的字段进行排序的。</p>
+<p>先用 GROUP BY 计算出各个层号的数量，然后根据数量排序（省略了顺序关键字 ASC）：</p>
+<p><img src="/post-images/1561782593105.png" alt="SELECT语句详解"></p>
+<p>也可以用倒序：</p>
+<p><img src="/post-images/1561782612076.png" alt="SELECT语句详解"></p>
+<p>以上是 ORDER BY 的聚合函数排序，也支持普通字段排序，支持按多个字段排序，而且能为每个排序字段指定 DESC（倒序）或 ASC（顺序）。</p>
+<h1 id="五、多个条件的过滤、分组和排序"><a href="#五、多个条件的过滤、分组和排序" class="headerlink" title="五、多个条件的过滤、分组和排序"></a>五、多个条件的过滤、分组和排序</h1><p>过滤、分组和排序是可以用多个条件的，示例如下。</p>
+<p>多条件过滤，层号和所在单元均为 1：</p>
+<p><img src="/post-images/1561782622443.png" alt="SELECT语句详解"></p>
+<p>多条件分组，根据单元和层号排列组合进行分组：</p>
+<p><img src="/post-images/1561782980489.png" alt="SELECT语句详解"></p>
+<p>多条件排序，根据房屋编码、坐落进行排序，优先房屋编码，房屋编码相同的按坐落排序：</p>
+<p><img src="/post-images/1561782930754.png" alt="SELECT语句详解"></p>
+<h1 id="六、组合条件查询"><a href="#六、组合条件查询" class="headerlink" title="六、组合条件查询"></a>六、组合条件查询</h1><p>过滤（WHERE）、分组（GROUP BY）和排序（ORDER BY）是可以组合进行查询的，两两组合或三个一起用都可以：</p>
+<p><img src="/post-images/1561782994427.png" alt="SELECT语句详解"></p>
+<h1 id="七、DISTINCT-唯一值"><a href="#七、DISTINCT-唯一值" class="headerlink" title="七、DISTINCT 唯一值"></a>七、DISTINCT 唯一值</h1><p>前文讲过了 SELECT 的分组语句 GROUP BY，如果我只想直到某个字段的唯一值，不需要用分组聚合，就可以用 DISTINCT：</p>
+<p><img src="/post-images/1561782651121.png" alt="SELECT语句详解"></p>
+<h1 id="八、HAVING-分组过滤"><a href="#八、HAVING-分组过滤" class="headerlink" title="八、HAVING 分组过滤"></a>八、HAVING 分组过滤</h1><p>前文讲过了 SELECT 的分组语句 GROUP BY，如果通过分组得到的结果仍然很多，需要从分组的内容中过滤，怎么办？</p>
+<p>例如，需要找到数量大于 1000 的 ch，可以用 HAVING 语句：</p>
+<p><img src="/post-images/1561783019680.png" alt="SELECT语句详解"></p>
+<p>注意：HAVING 后只能是 GROUP BY 后的字段或其他字段的聚合函数。</p>
+<p>至此，SELECT 的基础语法介绍完毕。最后总结一下：</p>
+<ul>
+<li><p>过滤：WHERE</p>
+</li>
+<li><p>聚合：COUNT、MAX、MIN、SUM、AVG</p>
+</li>
+<li><p>分组：GROUP BY</p>
+</li>
+<li><p>分组过滤：HAVING</p>
+</li>
+<li><p>排序：ORDER BY [ASC&#x2F;DESC]</p>
+</li>
+</ul>
+<h1 id="九、执行顺序"><a href="#九、执行顺序" class="headerlink" title="九、执行顺序"></a>九、执行顺序</h1><p>需要注意的是，SELECT 语句执行过程中，是有先后顺序的。</p>
+<p>按照如下顺序进行执行的：</p>
+<p>过滤 → 聚合 → 分组 → 分组过滤 → 排序</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/" title="SELECT详解——过滤、聚合、分组、排序、唯一值、分组过滤">https://kaifeiji.cc/post/select-xiang-jie-guo-lu-ju-he-fen-zu-pai-xu-wei-yi-zhi-fen-zu-guo-lu/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Select/" rel="tag"># Select</a>
+              <a href="/tags/%E8%BF%87%E6%BB%A4/" rel="tag"># 过滤</a>
+              <a href="/tags/%E8%81%9A%E5%90%88/" rel="tag"># 聚合</a>
+              <a href="/tags/%E5%88%86%E7%BB%84/" rel="tag"># 分组</a>
+              <a href="/tags/%E6%8E%92%E5%BA%8F/" rel="tag"># 排序</a>
+              <a href="/tags/%E5%94%AF%E4%B8%80%E5%80%BC/" rel="tag"># 唯一值</a>
+              <a href="/tags/%E5%88%86%E7%BB%84%E8%BF%87%E6%BB%A4/" rel="tag"># 分组过滤</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/oracle-de-shu-ju-lei-xing-jie-shao/" rel="prev" title="Oracle的数据类型介绍">
+                  <i class="fa fa-angle-left"></i> Oracle的数据类型介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/select-xiang-jie-guo-lu-tiao-jian-de-yun-suan-fu/" rel="next" title="SELECT详解——过滤条件的运算符">
+                  SELECT详解——过滤条件的运算符 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
