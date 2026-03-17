@@ -2,7 +2,7 @@
 title: 从树莓派内网穿透到 Cloudflare Pages
 date: 2026-03-09 13:16:57
 categories:
-- 运维
+- 折腾
 tags:
 - Cloudflare
 - Pages
