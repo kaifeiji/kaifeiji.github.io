@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="原文：Why I Like Using Maps (and WeakMaps) for Handling DOM Nodes 在处理大量DOM节点时，Map（和WeakMap）是非常实用的工具，本文分析了具体原因。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="译：我为什么使用Map（和WeakMap）处理DOM节点">
+<meta property="og:url" content="https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="原文：Why I Like Using Maps (and WeakMaps) for Handling DOM Nodes 在处理大量DOM节点时，Map（和WeakMap）是非常实用的工具，本文分析了具体原因。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cms.macarthur.me/content/images/size/w1000/2023/04/maps.jpeg">
+<meta property="article:published_time" content="2023-07-28T07:02:47.000Z">
+<meta property="article:modified_time" content="2026-03-18T06:08:32.233Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="Map">
+<meta property="article:tag" content="WeakMap">
+<meta property="article:tag" content="翻译">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cms.macarthur.me/content/images/size/w1000/2023/04/maps.jpeg">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/","path":"post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/","title":"译：我为什么使用Map（和WeakMap）处理DOM节点"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>译：我为什么使用Map（和WeakMap）处理DOM节点 | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BB%E4%BD%95%E5%AF%B9%E8%B1%A1%E9%83%BD%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E9%94%AE%E5%90%8D"><span class="nav-number">1.</span> <span class="nav-text">任何对象都可以作为键名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E6%93%8D%E4%BD%9C%E4%B8%80%E8%88%AC%E8%80%8C%E8%A8%80%E6%98%AF%E6%80%A7%E8%83%BD%E8%89%AF%E5%A5%BD%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">读写操作一般而言是性能良好的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WeakMap%E7%AE%A1%E7%90%86%E5%86%85%E5%AD%98%E6%9B%B4%E9%AB%98%E6%95%88"><span class="nav-number">3.</span> <span class="nav-text">WeakMap管理内存更高效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%AA%E9%95%BF%E4%B8%8D%E7%9C%8B%E7%89%88%E6%9C%AC"><span class="nav-number">4.</span> <span class="nav-text">太长不看版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">其他使用案例？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">271</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="译：我为什么使用Map（和WeakMap）处理DOM节点 | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          译：我为什么使用Map（和WeakMap）处理DOM节点
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-07-28 15:02:47" itemprop="dateCreated datePublished" datetime="2023-07-28T15:02:47+08:00">2023-07-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>原文：<a target="_blank" rel="noopener" href="https://www.macarthur.me/posts/maps-for-dom-nodes">Why I Like Using Maps (and WeakMaps) for Handling DOM Nodes</a></p>
+<p>在处理大量DOM节点时，Map（和WeakMap）是非常实用的工具，本文分析了具体原因。</p>
+<span id="more"></span>
+
+<p>我们在JavaScript中使用大量普通的老式对象（POJO），来存储键值对数据，它很好用——清晰、易读：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> person = &#123;</span><br><span class="line">  <span class="attr">firstName</span>: <span class="string">&#x27;Alex&#x27;</span>, </span><br><span class="line">  <span class="attr">lastName</span>: <span class="string">&#x27;MacArthur&#x27;</span>, </span><br><span class="line">  <span class="attr">isACommunist</span>: <span class="literal">false</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>但是当开始处理大量频繁读取、修改、添加属性的实体时，人们更常见的做法是采用Map这种数据结构。原因是：在特定的场景下，<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map?ref=alex-macarthur#objects_vs._maps"><code>Map</code>比对象有更多的优势</a>，特别是存在性能敏感的问题，或者插入顺序非常重要时。</p>
+<p>但在最近，我开始意识到它们特别适合的场景：<strong>处理大量DOM节点</strong>。</p>
+<p>我在读Caleb Porzio<a target="_blank" rel="noopener" href="https://calebporzio.com/reactive-switchboard?ref=alex-macarthur">最近的一篇博客</a>时冒出了这个想法。在这篇博客中，他设计了一个10000行的表格作为示例，每一行都可以“激活”。为了管理每一行的选中状态，使用了一个对象存储键值对。以下是其中一个迭代的注释版本。我还补充了分号，因为<a target="_blank" rel="noopener" href="https://macarthur.me/jk?ref=alex-macarthur">我可不是野蛮人</a>（<em>译注：这里作者开玩笑，说不加句尾分号的是野蛮人</em>）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, watchEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> rowStates = &#123;&#125;;</span><br><span class="line"><span class="keyword">let</span> activeRow;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;tr&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">row</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 设置行状态</span></span><br><span class="line">    rowStates[row.<span class="property">id</span>] = <span class="title function_">ref</span>(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    row.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// 更新行状态</span></span><br><span class="line">        <span class="keyword">if</span> (activeRow) rowStates[activeRow].<span class="property">value</span> = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        activeRow = row.<span class="property">id</span>;</span><br><span class="line"></span><br><span class="line">        rowStates[row.<span class="property">id</span>].<span class="property">value</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">watchEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// 读取行状态</span></span><br><span class="line">        <span class="keyword">if</span> (rowStates[row.<span class="property">id</span>].<span class="property">value</span>) &#123;</span><br><span class="line">            row.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            row.<span class="property">classList</span>.<span class="title function_">remove</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这些代码运行良好（而且和本文主题没有直接冲突，所以并无冒犯之意）。但是！它使用的是对象，一个大型的类似哈希映射表的结构。用来关联值（value）的键名（key）必须是字符串，因此在每一行必须有一个唯一ID（或其他字符串），在生成和读取这些ID时，必然带来额外的代码成本。</p>
+<h2 id="任何对象都可以作为键名"><a href="#任何对象都可以作为键名" class="headerlink" title="任何对象都可以作为键名"></a>任何对象都可以作为键名</h2><p>与之不同的是，<code>Map</code>允许<strong>使用HTML节点作为键名（key）</strong>，因此这段代码改成了这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; ref, watchEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span><br><span class="line"></span><br><span class="line">- <span class="keyword">let</span> rowStates = &#123;&#125;;</span><br><span class="line">+ <span class="keyword">let</span> rowStates = <span class="keyword">new</span> <span class="title class_">Map</span>();</span><br><span class="line"><span class="keyword">let</span> activeRow;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;tr&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">row</span>) =&gt;</span> &#123;</span><br><span class="line">-  rowStates[row.<span class="property">id</span>] = <span class="title function_">ref</span>(<span class="literal">false</span>);</span><br><span class="line">+   rowStates.<span class="title function_">set</span>(row, <span class="title function_">ref</span>(<span class="literal">false</span>));</span><br><span class="line"></span><br><span class="line">    row.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">-       <span class="keyword">if</span> (activeRow) rowStates[activeRow].<span class="property">value</span> = <span class="literal">false</span>;</span><br><span class="line">+       <span class="keyword">if</span> (activeRow) rowStates.<span class="title function_">get</span>(activeRow).<span class="property">value</span> = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        activeRow = row;</span><br><span class="line"></span><br><span class="line">-       rowStates[row.<span class="property">id</span>].<span class="property">value</span> = <span class="literal">true</span>;</span><br><span class="line">+       rowStates.<span class="title function_">get</span>(activeRow).<span class="property">value</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="title function_">watchEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">-       <span class="keyword">if</span> (rowStates[row.<span class="property">id</span>].<span class="property">value</span>) &#123;</span><br><span class="line">+       <span class="keyword">if</span> (rowStates.<span class="title function_">get</span>(row).<span class="property">value</span>) &#123;</span><br><span class="line">            row.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            row.<span class="property">classList</span>.<span class="title function_">remove</span>(<span class="string">&#x27;active&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>最明显的好处是，<strong>不需要操心每一行的唯一ID了</strong>。每一行的HTML节点引用它自身作为键名——自然是唯一的。这样，就不需要设置或读取任何属性了，更简单、更有弹性。</p>
+<h2 id="读写操作一般而言是性能良好的"><a href="#读写操作一般而言是性能良好的" class="headerlink" title="读写操作一般而言是性能良好的"></a>读写操作<em>一般而言</em>是性能良好的</h2><p>“一般而言”的斜体，是因为在大部分案例中，性能差异是微不足道的。但当你处理更大的数据集，读写操作就会显示出性能优势。这甚至是写在规范中的——<code>Map</code>的构建必须保证数据持续增长时的性能：</p>
+<blockquote>
+<p><code>Map</code>在实现过程中，使用的哈希表或其他机制，必须保证在数据集的元素数量增长时，平均访问时间呈亚线性变化。</p>
+</blockquote>
+<p>“亚线性”代表性能不会随着<code>Map</code>大小的增长率而降级。所以，即使时很大的<code>Map</code>也会保持相对快的读写速度。</p>
+<p>即使没有性能优势，也没有必要搞一个DOM属性，或者用字符串ID来查找。每个键名就是它自己的引用，可以省去一步或两步操作。</p>
+<p>我还做了一些基本的性能测试，来验证这些想法。首先，根据Caleb的场景，我在页面上生成了10000个<code>&lt;tr&gt;</code>元素：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> table = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;table&#x27;</span>);</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">append</span>(table);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> count = <span class="number">10_000</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">  <span class="keyword">const</span> item = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;tr&#x27;</span>);</span><br><span class="line">  item.<span class="property">id</span> = i;</span><br><span class="line">  item.<span class="property">textContent</span> = <span class="string">&#x27;item&#x27;</span>;</span><br><span class="line">  table.<span class="title function_">append</span>(item);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后，我写了一个脚本，循环所有行，在对象或<code>Map</code>中存储一些相关状态，测量花了多长时间。我还在<code>for</code>循环中将相同的过程重复很多次，然后确定了平均的读写时间。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> rows = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;tr&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> times = [];</span><br><span class="line"><span class="keyword">const</span> testMap = <span class="keyword">new</span> <span class="title class_">Map</span>();</span><br><span class="line"><span class="keyword">const</span> testObj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">  <span class="keyword">const</span> start = performance.<span class="title function_">now</span>();</span><br><span class="line"></span><br><span class="line">  rows.<span class="title function_">forEach</span>(<span class="function">(<span class="params">row, index</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// Test Case #1  </span></span><br><span class="line">    <span class="comment">// testObj[row.id] = index;</span></span><br><span class="line">    <span class="comment">// const result = testObj[row.id];</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Test Case #2</span></span><br><span class="line">    <span class="comment">// testMap.set(row, index);</span></span><br><span class="line">    <span class="comment">// const result = testMap.get(row);</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  times.<span class="title function_">push</span>(performance.<span class="title function_">now</span>() - start);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> average = times.<span class="title function_">reduce</span>(<span class="function">(<span class="params">acc, i</span>) =&gt;</span> acc + i, <span class="number">0</span>) / times.<span class="property">length</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(average);</span><br></pre></td></tr></table></figure>
+
+<p>我用不同的行数进行了测试。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>100行</th>
+<th>10000行</th>
+<th>100000行</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>0.023ms</td>
+<td>3.45ms</td>
+<td>89.9ms</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>0.019ms</td>
+<td>2.1ms</td>
+<td>48.7ms</td>
+</tr>
+<tr>
+<td>快（%）</td>
+<td>17%</td>
+<td>39%</td>
+<td>46%</td>
+</tr>
+</tbody></table>
+<p>注意，这些结果在不同的环境中可能有很大差异，但总体来看，结果符合我的预期。当处理相对少的数量时，<code>Map</code>和对象的性能是相当的。但随着数量增加，<code>Map</code>开始拉开差距，亚线性的性能变化开始发力。</p>
+<h2 id="WeakMap管理内存更高效"><a href="#WeakMap管理内存更高效" class="headerlink" title="WeakMap管理内存更高效"></a>WeakMap管理内存更高效</h2><p>另外还有一个<code>Map</code>接口的特别版本，能更好的管理内存——<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap?ref=alex-macarthur"><code>WeakMap</code></a>。它对键名（key）的引用是“弱引用”，任何键名在其他地方失去引用绑定，就符合垃圾回收的标准。因此，当键名不再被使用时，键名+键值就从<code>WeakMap</code>中被整个砍掉了，能清理更多的内存。这种机制对DOM节点而言同样有效。</p>
+<p>为了弄出效果，我们将会使用<code>FinalizationRegistry</code>，在监听的引用被垃圾回收时，会<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry?ref=alex-macarthur">触发回调</a>（我从来没想到还有这么好用的东西，哈哈）。我们先从一个小列表开始：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">id</span>=<span class="string">&quot;item1&quot;</span>&gt;</span>first<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">id</span>=<span class="string">&quot;item2&quot;</span>&gt;</span>second<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">id</span>=<span class="string">&quot;item3&quot;</span>&gt;</span>third<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来，我们把这些列表项放入<code>WeakMap</code>，注册监听<code>item2</code>。我们将会移除<code>item2</code>，当它被垃圾回收时，回调函数会被触发，然后我们就能看WeakMap有何变化了。</p>
+<p>但是…垃圾回收是不可预测的，而且也没有官方的方法手动触发，所以为了触发我们定时生成了大量对象，并将它们驻留在内存中。以下是完整脚本：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> listMap = <span class="keyword">new</span> <span class="title class_">WeakMap</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 每个列表项存入Map</span></span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;li&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">node</span>) =&gt;</span> &#123;</span><br><span class="line">    listMap.<span class="title function_">set</span>(node, node.<span class="property">id</span>);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> registry = <span class="keyword">new</span> <span class="title class_">FinalizationRegistry</span>(<span class="function">(<span class="params">heldValue</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 发生垃圾回收了！</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;回收后:&#x27;</span>, heldValue);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  registry.<span class="title function_">register</span>(<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;item2&#x27;</span>), listMap);</span><br><span class="line">    </span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;回收前:&#x27;</span>, listMap);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 移除节点，释放引用！</span></span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;item2&#x27;</span>).<span class="title function_">remove</span>();</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 定时创建大量对象来触发垃圾回收</span></span><br><span class="line">   <span class="keyword">const</span> objs = [];</span><br><span class="line">   <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">      objs.<span class="title function_">push</span>(...<span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">100</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> <span class="built_in">setTimeout</span>(resolve, <span class="number">10</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+
+<p>一开始，<code>WeakMap</code>包含3个列表项，符合预期。但在<code>item2</code>被移出DOM，发生垃圾回收时，它变了：</p>
+<p><img src="https://cms.macarthur.me/content/images/size/w1000/2023/04/maps.jpeg" alt="WeakMap remove item2"></p>
+<p>由于DOM中不再有对该节点的引用，<code>WeakMap</code>中<code>item2</code>的键名和键值被整个移除，释放了一点内存。这个特性我很喜欢，它能帮助环境中的内存保持更干净的状态。</p>
+<h2 id="太长不看版本"><a href="#太长不看版本" class="headerlink" title="太长不看版本"></a>太长不看版本</h2><p>我喜欢用<code>Map</code>操作DOM节点，因为：</p>
+<ul>
+<li>节点自身可以用作键名，不需要在每个节点上搞属性读写的事。</li>
+<li>对大量的数据而言，它从设计到实现，都有更好的性能。</li>
+<li>节点作为<code>WeakMap</code>的键名，在节点从DOM移除时，可以实现自动的垃圾回收。</li>
+</ul>
+<h2 id="其他使用案例？"><a href="#其他使用案例？" class="headerlink" title="其他使用案例？"></a>其他使用案例？</h2><p>类似<code>Map</code>和<code>Set</code>的“新”特性，用在有趣的现实场景中，让我感觉很有意思。如果你也有类似的想法，和我分享一下吧！</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/" title="译：我为什么使用Map（和WeakMap）处理DOM节点">https://kaifeiji.cc/post/why-i-like-using-maps-and-weakmaps-for-handling-dom-nodes/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BF%BB%E8%AF%91/" rel="tag"># 翻译</a>
+              <a href="/tags/Map/" rel="tag"># Map</a>
+              <a href="/tags/WeakMap/" rel="tag"># WeakMap</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/an-introduction-to-symbols-in-javascript/" rel="prev" title="介绍JavaScript中Symbol">
+                  <i class="fa fa-angle-left"></i> 介绍JavaScript中Symbol
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/mining/" rel="next" title="采石">
+                  采石 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
