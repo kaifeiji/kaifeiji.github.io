@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"kaifeiji.cc","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":true,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Mastering JS创建于2019年4月，旨在帮助JavaScript开发者解决日常问题。市面上，太多千篇一律的从零构建APP，或者钻牛角尖的八股文。Mastering JS提供了简洁的教程和有效的工具，帮助开发者快速的解决问题。Mastering JS是Valeri Karpov，Mongoose的维护者，在美国弗罗里达州迈阿密滩创建的。Mastering JS属于MeanIT Softw">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mastering JS - Fundamentals">
+<meta property="og:url" content="https://kaifeiji.cc/post/mastering-js-fundamentals/index.html">
+<meta property="og:site_name" content="开飞机的老张">
+<meta property="og:description" content="Mastering JS创建于2019年4月，旨在帮助JavaScript开发者解决日常问题。市面上，太多千篇一律的从零构建APP，或者钻牛角尖的八股文。Mastering JS提供了简洁的教程和有效的工具，帮助开发者快速的解决问题。Mastering JS是Valeri Karpov，Mongoose的维护者，在美国弗罗里达州迈阿密滩创建的。Mastering JS属于MeanIT Softw">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-02T07:52:30.000Z">
+<meta property="article:modified_time" content="2026-03-18T03:01:08.076Z">
+<meta property="article:author" content="kaifeiji.cc">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="Mastering JS">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://kaifeiji.cc/post/mastering-js-fundamentals/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://kaifeiji.cc/post/mastering-js-fundamentals/","path":"post/mastering-js-fundamentals/","title":"Mastering JS - Fundamentals"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mastering JS - Fundamentals | 开飞机的老张</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.1/mermaid.min.js","integrity":"sha256-BmQmdWDS8X2OTbrwELWK366LV6escyWhHHe0XCTU/Hk="}}</script>
+  <script src="/js/third-party/tags/mermaid.js" defer></script>
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="开飞机的老张" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">开飞机的老张</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">写给未来的信</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%91%E5%BA%8F"><span class="nav-number">1.</span> <span class="nav-text">译序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E5%88%97%E8%A1%A8"><span class="nav-number">2.</span> <span class="nav-text">文章列表</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kaifeiji.cc"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">kaifeiji.cc</p>
+  <div class="site-description" itemprop="description">这个人很懒，什么也没有留下</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">271</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kaifeiji" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kaifeiji" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:eval@163.com" title="E-Mail → mailto:eval@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kaifeiji.cc/post/mastering-js-fundamentals/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="kaifeiji.cc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="开飞机的老张">
+      <meta itemprop="description" content="这个人很懒，什么也没有留下">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Mastering JS - Fundamentals | 开飞机的老张">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mastering JS - Fundamentals
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-02 15:52:30" itemprop="dateCreated datePublished" datetime="2023-01-02T15:52:30+08:00">2023-01-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mastering-JS/" itemprop="url" rel="index"><span itemprop="name">Mastering JS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>Mastering JS创建于2019年4月，旨在帮助JavaScript开发者解决日常问题。市面上，太多千篇一律的从零构建APP，或者钻牛角尖的八股文。Mastering JS提供了简洁的教程和有效的工具，帮助开发者快速的解决问题。<br>Mastering JS是<a target="_blank" rel="noopener" href="https://twitter.com/code_barbarian">Valeri Karpov</a>，<a target="_blank" rel="noopener" href="https://mongoosejs.com/">Mongoose</a>的维护者，在美国弗罗里达州迈阿密滩创建的。Mastering JS属于MeanIT Software的产品之一，MeanIT Software是聚焦于JavaScript的软件发行商。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="译序"><a href="#译序" class="headerlink" title="译序"></a>译序</h2><p><a target="_blank" rel="noopener" href="https://masteringjs.io/fundamentals"><strong>掌握JavaScript-基础篇</strong>（Mastering JS - Fundamentals）</a>由一系列的小专题文章组成，每篇文章都是从JavaScript的某一个特性出发，讲解它的用法、优缺点、替代品等。</p>
+<p>在本系列中比较有价值的内容：</p>
+<ul>
+<li>从使用的角度，讲解容易忽略、容易出错的点</li>
+<li>JavaScript语言本身存在的一些缺陷，及JavaScript后续的发展</li>
+<li>引出一些其他知识，例如相关的npm包、业界趣闻等</li>
+<li>文章中间的链接，有一些水平高、有深度的文章（英文），值得深入研究</li>
+</ul>
+<p>对有经验的开发者而言，有<a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/">MDN文档</a>就够了，本系列文章的绝大部分内容都可以在其中找到。</p>
+<p>但对初学者和经验不足的开发者，MDN太庞大而找不到重点。</p>
+<p>而本系列文章是从语言的某一个切面出发，读者可以选择感兴趣的部分进行阅读。</p>
+<p>单个文章篇幅几百字左右，即使加上代码测试，也不会超过10分钟，特别适合碎片时间阅读。</p>
+<h2 id="文章列表"><a href="#文章列表" class="headerlink" title="文章列表"></a>文章列表</h2><p><a href="/post/how-to-compare-objects-in-javascript/">JavaScript如何比较两个Object</a></p>
+<blockquote>
+<p>JavaScript中有很多方法来比较对象。本文提供了JavaScript比较对象的三种方法，以及它们的优缺点。</p>
+</blockquote>
+<hr>
+<p><a href="/post/an-introduction-to-symbols-in-javascript/">介绍JavaScript中Symbol</a></p>
+<blockquote>
+<p>Symbol提供了一种在对象中创建隐藏属性的方式。</p>
+</blockquote>
+<hr>
+<p><a href="/post/get-query-string-values-in-vanilla-javascript/">原生JavaScript获取URL参数</a></p>
+<blockquote>
+<p>本文展示了如何用原生JavaScript解析URL参数。</p>
+</blockquote>
+<hr>
+<p><a href="/post/capitalize-the-first-letter-of-a-string-in-javascript/">字符串首字母大写</a></p>
+<blockquote>
+<p>不用任何外部库，实现字符串首字母大写。</p>
+</blockquote>
+<hr>
+<p><a href="/post/iterating-through-an-object-with-foreach/">用forEach()遍历对象</a></p>
+<blockquote>
+<p>通过Object.keys()、Object.values()和Object.entries()，可以用forEach遍历一个JavaScript对象。</p>
+</blockquote>
+<hr>
+<p><a href="/post/immediately-invoked-function-expressions-iife-in-javascript/">JavaScript的立即调用函数表达式（IIFE）</a></p>
+<blockquote>
+<p>JavaScript的立即调用函数表达式（IIFE）是一种常用于变量闭包的设计模式。</p>
+</blockquote>
+<hr>
+<p><a href="/post/disable-a-button-in-javascript/">JavaScript禁用按钮</a></p>
+<blockquote>
+<p>如何用原生JavaScript禁用一个按钮。</p>
+</blockquote>
+<hr>
+<p><a href="/post/formdata-in-javascript/">JavaScript的FormData</a></p>
+<blockquote>
+<p><code>FormData</code>类在JavaScript上传文件时非常有用。</p>
+</blockquote>
+<hr>
+<p><a href="/post/blobs-in-javascript/">JavaScript的Blob</a></p>
+<blockquote>
+<p>Blob（二进制大型对象）是JavaScript中一种类似于文件的数据结构，相当于客户端的Buffer。</p>
+</blockquote>
+<hr>
+<p><a href="/post/read-local-files-in-javascript-with-filereader/">用FileReader读取本地文件</a></p>
+<blockquote>
+<p>FileReader类可以从原生的文件input中读取文件。</p>
+</blockquote>
+<hr>
+<p><a href="/post/thenables-in-javascript/">JavaScript的Thenable</a></p>
+<blockquote>
+<p>Thenable是一种行为类似于Promise的对象，主要用于链式操作和async&#x2F;await，但它并不是Promise。</p>
+</blockquote>
+<hr>
+<p><a href="/post/reject-a-promise-in-javascript/">JavaScript中Promise的reject</a></p>
+<blockquote>
+<p>在Promise中出现的错误，可以用reject将其标记为rejected状态。</p>
+</blockquote>
+<hr>
+<p><a href="/post/javascript-promise-chaining/">JavaScript的Promise链</a></p>
+<blockquote>
+<p>Promise链式调用是一种很强大的模式，最大的好处是可以用一个<code>catch()</code>处理所有的错误。</p>
+</blockquote>
+<hr>
+<p><a href="/post/useing-bluebird-promises/">使用bluebird操作Promise</a></p>
+<blockquote>
+<p>blurbird是JavaScript一个流行的Promise库。</p>
+</blockquote>
+<hr>
+<p><a href="/post/javascript-create-promise/">JavaScript创建Promise</a></p>
+<blockquote>
+<p>本文简述JavaScript创建Promise的几种方式。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-promise-catch-function-in-javascript/">JavaScript中Promise的catch函数</a></p>
+<blockquote>
+<p>Promise的catch函数是一个很方便的语法糖，用于处理Promise中的错误。</p>
+</blockquote>
+<hr>
+<p><a href="/post/compare-arrays-in-javascript/">JavaScript比较数组</a></p>
+<blockquote>
+<p>JavaScript比较两个数组的一些技巧。</p>
+</blockquote>
+<hr>
+<p><a href="/post/compare-dates-in-javascript/">JavaScript比较日期</a></p>
+<blockquote>
+<p>JavaScript比较日期不太容易，Date类型是对象，比较符按照引用而不是按值进行对比。本文简介如何用原生JavaScript比较日期。</p>
+</blockquote>
+<hr>
+<p><a href="/post/compare-strings-in-javascript/">JavaScript比较字符串</a></p>
+<blockquote>
+<p>JavaScript的比较运算符很容易比较字符串，另外还有<code>localeCompare()</code>可以用于排序。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-typeof-operator-in-javascript/">JavaScript的typeof运算符</a></p>
+<blockquote>
+<p>typeof运算符可以判断一个值的类型——number、string、object等。</p>
+</blockquote>
+<hr>
+<p><a href="/post/sort-an-array-of-objects-in-javascript/">JavaScript对象数组排序</a></p>
+<blockquote>
+<p>JavaScript的内置<code>sort</code>函数可以用属性将对象数组进行排序。</p>
+</blockquote>
+<hr>
+<p><a href="/post/how-to-iterate-over-a-javascript-object/">如何遍历JavaScript的对象</a></p>
+<blockquote>
+<p>有许多种方法可以遍历JavaScript对象的所有key和value。本文介绍3种方法和它们的优缺点。</p>
+</blockquote>
+<hr>
+<p><a href="/post/introduction-to-puppeteer/">Puppeteer简介</a></p>
+<blockquote>
+<p>Puppeteer使用真实浏览器测试JavaScript应用，是非常好的工具。</p>
+</blockquote>
+<hr>
+<p><a href="/post/a-practial-introduction-to-finit-state-machines/">有限状态机的实用介绍</a></p>
+<blockquote>
+<p>状态机乍一看像是无趣的抽象话题，但它对JavaScript开发者来说非常有用。</p>
+</blockquote>
+<hr>
+<p><a href="/post/understanding-async-await-in-javascript/">理解JavaScript中async&#x2F;await</a></p>
+<blockquote>
+<p>async&#x2F;await可以以同步的方式写异步代码，没有回调函数或Promise链，只有<code>for</code>循环和<code>if</code>语句。</p>
+</blockquote>
+<hr>
+<p><a href="/post/understanding-new-promise-in-javascript/">理解JavaScript中new Promise</a></p>
+<blockquote>
+<p>在使用<code>new Promise</code>时，调用的时Promise的constructor。本文介绍了Promise constructor的专业用法。</p>
+</blockquote>
+<hr>
+<p><a href="/post/resolve-a-promise-in-javascript/">JavaScript中Promise的resolve</a></p>
+<blockquote>
+<p>在JavaScript的Promise中，resolve一个值时，会将Promise状态标记为fulfilled。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-promise-all-function-in-javascript/">JavaScript的Promise.all()函数</a></p>
+<blockquote>
+<p><code>Promise.all()</code>函数可以并行执行多个Promise，然后收集执行结果。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-switch-case-statement-in-javascript/">JavaScript的switch&#x2F;case语句</a></p>
+<blockquote>
+<p>switch语句就像多个叠加的if语句，可以在不同条件执行不同的代码。本文展示了如何使用switch&#x2F;case语句。</p>
+</blockquote>
+<hr>
+<p><a href="/post/this-in-javascript/">JavaScript的this</a></p>
+<blockquote>
+<p><code>this</code>关键字，也称为函数的“上下文”或“范围”，是一个强大的也令人迷惑的概念。本文帮你捋清思路。</p>
+</blockquote>
+<hr>
+<p><a href="/post/triple-equals-vs-double-equals-in-javascript/">JavaScript的&#x3D;&#x3D;&#x3D;和&#x3D;&#x3D;</a></p>
+<blockquote>
+<p>何时使用<code>==</code>，何时使用<code>===</code>，经常会导致开发者困惑不已。简单的版本：除了一个小小的例外，应该一直使用<code>===</code>。</p>
+</blockquote>
+<hr>
+<p><a href="/post/get-tomorrow-s-date-in-javascript/">JavaScript获取明天的日期</a></p>
+<blockquote>
+<p>虽然用Moment.js一类的库很容易操作日期，但原生JavaScript也能获取明天日期。</p>
+</blockquote>
+<hr>
+<p><a href="/post/static-properties-and-functions-in-javascript/">JavaScript的静态属性和函数</a></p>
+<blockquote>
+<p><code>static</code>关键字可以在ES6的类中定义静态属性和函数。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-modulus-operator-in-javascript/">JavaScript的取余运算符</a></p>
+<blockquote>
+<p>JavaScript的取余运算符返回第一个数除以第二个数的余数。</p>
+</blockquote>
+<hr>
+<p><a href="/post/truthy-values-in-javascript/">JavaScript的真值</a></p>
+<blockquote>
+<p>JavaScript的if条件不一定是Boolean值，可以是任何类型的值。内置的强制类型转换接收到一个真值，会转换为true。</p>
+</blockquote>
+<hr>
+<p><a href="/post/logical-operators-in-javascript/">JavaScript的逻辑运算符</a></p>
+<blockquote>
+<p>JavaScript有3个逻辑运算符：<code>&amp;&amp;</code>、<code>||</code>和<code>!</code>。这三个运算符常用在<code>if</code>语句，本文介绍了逻辑运算符其他的一些神奇的用法。</p>
+</blockquote>
+<hr>
+<p><a href="/post/what-is-falsy-in-javascript/">JavaScript中的“假”值是什么</a></p>
+<blockquote>
+<p>JavaScript的类型强制转换导致代码很容易出错，但如果理解了基本原理，可以省去很多无用的类型检查。本文简述了“假”值。</p>
+</blockquote>
+<hr>
+<p><a href="/post/array-filter-in-javascript/">JavaScript数组的filter()</a></p>
+<blockquote>
+<p>JavaScript的数组函数filter()可以筛选出符合指定条件的数组元素，本文简述该函数的使用。</p>
+</blockquote>
+<hr>
+<p><a href="/post/making-a-javascript-function-sleep/">让JavaScript函数暂停一段时间</a></p>
+<blockquote>
+<p>JavaScript没有内置的<code>sleep()</code>函数，但也可以通过其他方式让函数暂停一段时间。</p>
+</blockquote>
+<hr>
+<p><a href="/post/a-brief-overview-of-cross-origin-resource-sharing-cors/">CORS（跨域资源共享）的简单总结</a></p>
+<blockquote>
+<p>跨域资源共享，简写为CORS，是浏览器端的一项协议，用于确定从其他域请求一个资源是否安全。本文简要介绍。</p>
+</blockquote>
+<hr>
+<p><a href="/post/what-is-a-plain-old-javascript-object-pojo/">POJO（Plain Old JavaScript Object）是什么</a></p>
+<blockquote>
+<p>POJO是JavaScript存储用户输入数据最常用的方式，如何确切定义POJO呢？</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-promise-then-function-in-javascript/">JavaScript中Promise的then()函数</a></p>
+<blockquote>
+<p><code>then()</code>函数是JavaScript的Promise交互的主要方式，是Promise链式语法的一部分。</p>
+</blockquote>
+<hr>
+<p><a href="/post/promises-in-javascript/">JavaScript的Promise</a></p>
+<blockquote>
+<p>Promise是一个代表异步操作的对象，它是JavaScript的基础并发原语。本文讲解了相关知识。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-instanceof-operator-in-javascript/">JavaScript的instanceof操作符</a></p>
+<blockquote>
+<p><code>instanceof</code>运算符可以确定一个对象是否是一个类的实例。</p>
+</blockquote>
+<hr>
+<p><a href="/post/classes-in-javascript/">JavaScript的类</a></p>
+<blockquote>
+<p>从ES6&#x2F;2015开始，JavaScript新增了面向对象编程的内置关键字<code>class</code>。本文介绍了它的工作原理。</p>
+</blockquote>
+<hr>
+<p><a href="/post/json-stringify-in-javascript/">JavaScript的JSON.stringify()</a></p>
+<blockquote>
+<p><code>JSON.stringify()</code>函数是JavaScript对象转JSON字符串最常见的方法。本文从实用的角度、以示例说明<code>JSON.stringify()</code>。</p>
+</blockquote>
+<hr>
+<p><a href="/post/object-seal-in-javascript/">JavaScript的Object.seal()</a></p>
+<blockquote>
+<p><code>seal()</code>函数可以防止对象添加或移除属性，同时仍然允许修改已有的属性，本文介绍了一些相关知识。</p>
+</blockquote>
+<hr>
+<p><a href="/post/intro-to-object-prototypes-in-javascript/">JavaScript对象的原型（prototype）简介</a></p>
+<blockquote>
+<p>JavaScript的继承是基于原型（prototype-based）的，即使使用ES6中类的<code>extends</code>关键词时也是如此。本文介绍了原型（prototype）的一些知识。</p>
+</blockquote>
+<hr>
+<p><a href="/post/deep-copy-vs-shallow-copy-in-javascript/">JavaScript的深拷贝和浅拷贝</a></p>
+<blockquote>
+<p>在JavaScript中，经常会听说“深克隆”和“浅克隆”，也叫做浅拷贝和浅拷贝。本文介绍了其含义及示例。</p>
+</blockquote>
+<hr>
+<p><a href="/post/object-assign-in-javascript/">JavaScript中的Object.assign()</a></p>
+<blockquote>
+<p><code>Object.assign()</code>函数将一个对象的属性赋给另一个对象，可以用于浅拷贝对象或一次性赋值多个属性。</p>
+</blockquote>
+<hr>
+<p><a href="/post/3-ways-to-concatenate-string-in-javascript/">JavaScript拼接字符串3种方法</a></p>
+<blockquote>
+<p>JavaScript中可以用<code>+</code>运算符、<code>Array#join()</code>函数和<code>String#concat()</code>函数拼接字符串。本文介绍了一些需要了解的知识。</p>
+</blockquote>
+<hr>
+<p><a href="/post/capitalize-the-first-letter-of-a-string-in-javascript/">JavaScript字符串首字母大写</a></p>
+<blockquote>
+<p>JavaScript中如何将“dog”转为“Dog”。</p>
+</blockquote>
+<hr>
+<p><a href="/post/what-does-void-0-do-in-javascript/">JavaScript中void 0的作用</a></p>
+<blockquote>
+<p>JavaScript中的void运算符是一个普遍的难点，它很少出现在教程中，但它有一些方便的用途。本文展示了void运算符最常见的一些用途。</p>
+</blockquote>
+<hr>
+<p><a href="/post/what-is-a-javascript-expression/">JavaScript的表达式</a></p>
+<blockquote>
+<p>类似Vue的许多框架，允许在HTML中内嵌JavaScript表达式。什么是表达式？可以在表达式加入<code>if</code>语句吗？</p>
+</blockquote>
+<hr>
+<p><a href="/post/javascript-array-push-tutorial/">JavaScript数组的push教程</a></p>
+<blockquote>
+<p>push()方法向JavaScript数组的末尾添加一个元素。本文介绍push()是如何使用的。</p>
+</blockquote>
+<hr>
+<p><a href="/post/check-if-a-js-array-contains-a-specific-value/">检查JS数组是否包含特定值</a></p>
+<blockquote>
+<p>检查JavaScript数组是否包含某个值，有两种常见方法：<code>includes()</code>和<code>indexOf()</code>。本文展示了如何使用二者，以及二者分别适用的场景。</p>
+</blockquote>
+<hr>
+<p><a href="/post/arrow-function-in-javascript/">JavaScript的箭头函数</a></p>
+<blockquote>
+<p>箭头函数可以让编写函数更简洁，但有一些语法上的奇怪之处。本文描述了有效的使用箭头函数所需要了解的知识。</p>
+</blockquote>
+<hr>
+<p><a href="/post/make-javascript-objects-immutable-with-object-freeze/">用Object.freeze()使JavaScript对象不可变</a></p>
+<blockquote>
+<p><code>const</code>关键字并不能防止对象属性的修改，而Object.freeze()函数可以实现，但会带有警告。</p>
+</blockquote>
+<hr>
+<p><a href="/post/what-does-use-strict-do-in-javascript/">JavaScript中“use strict”的作用</a></p>
+<blockquote>
+<p>JavaScript的“use strict”会开启严格模式。本文解释了何为严格模式。</p>
+</blockquote>
+<hr>
+<p><a href="/post/understanding-callbacks-in-javascript/">理解JavaScript的回调机制</a></p>
+<blockquote>
+<p>“回调”是JavaScript中较其他语言不同的几个概念之一。本文围绕回调帮助你缕清思路。</p>
+</blockquote>
+<hr>
+<p><a href="/post/an-overview-of-the-object-keys-function-in-javascript/">JavaScript的Object.keys()函数概览</a></p>
+<blockquote>
+<p>介绍如何使用JavaScript的Object.keys()。</p>
+</blockquote>
+<hr>
+<p><a href="/post/understanding-array-splice-in-javascript/">理解JavaScript中的Array.splice()</a></p>
+<blockquote>
+<p>如何使用<code>splice()</code>从JavaScript数组中添加和移除元素。</p>
+</blockquote>
+<hr>
+<p><a href="/post/substring-vs-substr-vs-slice-in-javascript/">JavaScript中substring、substr和slice的区别</a></p>
+<blockquote>
+<p>JavaScript有3种方法可以获取字符串的子串。本文介绍了<code>String#substring()</code>、<code>String#substr()</code>和<code>String#slice()</code>的区别。</p>
+</blockquote>
+<hr>
+<p><a href="/post/replace-all-instances-of-a-string-in-javascript/">JavaScript替换字符串中所有给定子字符串</a></p>
+<blockquote>
+<p>学习如何替换JavaScript字符串中所有给定子字符串。</p>
+</blockquote>
+<hr>
+<p><a href="/post/sorting-an-array-in-javascript/">JavaScript的数组排序</a></p>
+<blockquote>
+<p>学习如何使用JavaScript内置的Array#sort()函数。</p>
+</blockquote>
+<hr>
+<p><a href="/post/maps-in-javascript/">JavaScript的Map</a></p>
+<blockquote>
+<p>学习如何使用ES6的Map。</p>
+</blockquote>
+<hr>
+<p><a href="/post/compare-two-strings-in-javascript/">JavaScript比较两个字符串</a></p>
+<blockquote>
+<p>学习如何比较两个字符串：哪个更大、更小或相等。</p>
+</blockquote>
+<hr>
+<p><a href="/post/check-if-a-string-contains-a-substring-in-javascript/">JavaScript检查字符串是否包含子字符串</a></p>
+<blockquote>
+<p>学习使用原生JavaScript检查字符串是否包含子字符串。</p>
+</blockquote>
+<hr>
+<p><a href="/post/8-neat-examples-with-foreach-in-javascript/">JavaScript中forEach()8个简洁的例子</a></p>
+<blockquote>
+<p>学习如何使用JavaScript的forEach()遍历嵌套数组、对象的key和其他类型。</p>
+</blockquote>
+<hr>
+<p><a href="/post/the-difference-between-in-and-hasownproperty-in-javascript/">JavaScript中in和hasOwnProperty的区别</a></p>
+<blockquote>
+<p>JavaScript中检查对象中是否包含指定key的两种方法。</p>
+</blockquote>
+<hr>
+<p><a href="/post/format-dates-using-vanilla-javascript/">使用原生JavaScript格式化日期</a></p>
+<blockquote>
+<p>学习使用<code>toLocaleString()</code>函数格式化日期，不用外部库。</p>
+</blockquote>
+<hr>
+<p><a href="/post/calculate-standard-deviation-in-javascript/">JavaScript计算标准差</a></p>
+<blockquote>
+<p>在Node.js和浏览器中使用Math.js计算标准差。</p>
+</blockquote>
+<hr>
+<p><a href="/post/understand-valueof-in-javascript/">理解JavaScript中的valueOf()</a></p>
+<blockquote>
+<p>学习String类型、Number类型、Date类型都具备的valueOf()函数。</p>
+</blockquote>
+<hr>
+<p><a href="/post/get-the-current-timestamp-in-javascript/">JavaScript获取当前时间戳</a></p>
+<blockquote>
+<p>学些如何在JavaScript中获取当前Unix时间戳。</p>
+</blockquote>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>kaifeiji.cc
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://kaifeiji.cc/post/mastering-js-fundamentals/" title="Mastering JS - Fundamentals">https://kaifeiji.cc/post/mastering-js-fundamentals/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="followme">
+  <span>欢迎关注我的其它发布渠道</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/tags/Mastering-JS/" rel="tag"># Mastering JS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/post/how-to-compare-objects-in-javascript/" rel="prev" title="JavaScript如何比较两个Object">
+                  <i class="fa fa-angle-left"></i> JavaScript如何比较两个Object
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/post/get-the-current-timestamp-in-javascript/" rel="next" title="JavaScript获取当前时间戳">
+                  JavaScript获取当前时间戳 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2008 – 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="far fa-paper-plane"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">kaifeiji.cc</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"kaifeiji/kaifeiji.github.io","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
