@@ -59,7 +59,7 @@ openspec init
 
 ### 审阅和修改生成的 spec
 
-人工审查 proposal.md、design.md、tasks.md 和 change 下的 delta specs（通常是 specs/<capability>/spec.md），确保它们准确地反映了需求、设计方案和任务列表。必要时，可以对它们进行修改和完善。
+人工审查 proposal.md、design.md、tasks.md 和 change 下的 delta specs（通常是 specs/capability/spec.md），确保它们准确地反映了需求、设计方案和任务列表。必要时，可以对它们进行修改和完善。
 
 ### 执行
 
